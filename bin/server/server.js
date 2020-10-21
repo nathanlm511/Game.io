@@ -267,7 +267,8 @@ io.on('connection', function (socket) {
         target: {
             x: 0,
             y: 0
-        }
+        },
+        health: 100
     };
 
     socket.on('gotit', function (player) {
@@ -480,6 +481,7 @@ function tickPlayer(currentPlayer) {
     function deleteFood(f) {
         food[f] = {};
         food.splice(f, 1);
+        currentPlayer.health--;
     }
 
     function eatMass(m) {
@@ -678,7 +680,8 @@ function sendUpdates() {
                             cells: f.cells,
                             massTotal: Math.round(f.massTotal),
                             hue: f.hue,
-                            name: f.name
+                            name: f.name,
+                            health: f.health
                         };
                     } else {
                         //console.log("Nombre: " + f.name + " Es Usuario");
@@ -687,7 +690,8 @@ function sendUpdates() {
                             y: f.y,
                             cells: f.cells,
                             massTotal: Math.round(f.massTotal),
-                            hue: f.hue
+                            hue: f.hue,
+                            health: f.health
                         };
                     }
                 }

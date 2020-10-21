@@ -268,7 +268,8 @@ io.on('connection', function (socket) {
         target: {
             x: 0,
             y: 0
-        }
+        },
+        health: 100
     };
 
     socket.on('gotit', function (player) {
@@ -492,6 +493,7 @@ function tickPlayer(currentPlayer) {
     function deleteFood(f) {
         food[f] = {};
         food.splice(f, 1);
+        currentPlayer.health--;
     }
 
     function eatMass(m) {
@@ -691,7 +693,7 @@ function sendUpdates() {
             })
             .filter(function(f) { return f; });
 
-        var visibleCells  = users
+        var visibleCells = users
             .map(function(f) {
                 for(var z=0; z<f.cells.length; z++)
                 {
@@ -708,7 +710,8 @@ function sendUpdates() {
                                 cells: f.cells,
                                 massTotal: Math.round(f.massTotal),
                                 hue: f.hue,
-                                name: f.name
+                                name: f.name,
+                                health: f.health
                             };
                         } else {
                             //console.log("Nombre: " + f.name + " Es Usuario");
@@ -718,6 +721,7 @@ function sendUpdates() {
                                 cells: f.cells,
                                 massTotal: Math.round(f.massTotal),
                                 hue: f.hue,
+                                health: f.health
                             };
                         }
                     }
