@@ -6,10 +6,57 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="./styles.css" />
     <title>Document</title>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+
+      uniform float time;
+    
+      //A sampler is a set of GLSL variable types. Variables of one of the sampler types must be uniforms or as function parameters. Each sampler in a program represents a single texture of a particular texture type.
+    
+      uniform sampler2D noiseTexture;
+      uniform sampler2D glowTexture;
+    
+      varying vec2 texCoord;
+    
+      void main( void ) 
+      {
+        /*Texture2D - Retrieves texels (i.e. the color) of a texture for the given coordinates.
+        vec4 texture2D(sampler2D sampler, vec2 coord)
+        sampler - specifies the sampler to which the texture from which texels will be retrieved is bound.
+        coord - specifies the texture coordinates at which texture will be sampled.
+        */
+        vec4 noise = texture2D( noiseTexture, texCoord );
+        
+        vec2 translation = texCoord + vec2( -1, 1 ) * time * 0.1; 
+        
+        translation.x += noise.b;
+        translation.y -= noise.g;
+        
+        vec4 color = texture2D( glowTexture, translation );
+    
+        vec4 newColor = vec4(color.r, color.g, color.b, 0.6);
+        
+        gl_FragColor = newColor;
+      }
+    
+    </script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+
+      varying vec2 texCoord;
+    
+      void main()
+      {
+        texCoord = uv;
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    
+    </script>
   </head>
   <body>
     <div class="scene"></div>
     <script src="./three.min.js"></script>
+    <script src="./OrbitControls.js"></script>
     <script src="./GLTFLoader.js"></script>
     <script src="./main.js"></script>
   </body>
