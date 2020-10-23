@@ -92,6 +92,11 @@ function init() {
     });
 }
 
+function changevolume(amount) {
+    var audioobject = document.getElementsByTagName("audio")[0];
+    audioobject.volume = amount;
+}
+
 // Add event listener for keypresses. When keypress dectected keyboard function is called
 document.addEventListener("keydown", keyboard, false);
 
