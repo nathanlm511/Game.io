@@ -14,6 +14,14 @@ let orbitControls,
 let oceanUrl = "../img/water.jpg";
 let wavesUrl = "../img/waves.png";
 
+//controls
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
+let speed = 12.5;
+let x, y ,z;
+
 let duration = 5000; // ms
 let currentTime = Date.now();
 
@@ -37,6 +45,10 @@ function init() {
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set(0, 500, 400);
 
+    x = camera.position.x;
+    y = camera.position.y;
+    z = camera.position.z;
+
     const ambient = new THREE.AmbientLight(0x404040, 2);
     scene.add(ambient);
 
@@ -48,6 +60,7 @@ function init() {
     // Add limits to zoom in and zoom out distance
     orbitControls.maxDistance = 3250;
     orbitControls.minDistance = 225;
+    // orbitControls.maxAzimuthAngle = [Math.PI, Math.PI]
 
     container.appendChild(renderer.domElement);
     // scene.background = new THREE.Color( 0xffffff );
@@ -71,7 +84,7 @@ function init() {
         uniforms: uniforms,
         vertexShader: document.getElementById("vertexShader").textContent,
         fragmentShader: document.getElementById("fragmentShader").textContent,
-        transparent: true,
+        transparent: false,
     });
     let oceanGeometry = new THREE.PlaneGeometry(3000, 3000, 100, 100);
     let ocean = new THREE.Mesh(oceanGeometry, material);
@@ -93,50 +106,48 @@ function init() {
 }
 
 // Add event listener for keypresses. When keypress dectected keyboard function is called
-document.addEventListener("keydown", keyboard, false);
+document.addEventListener( 'keydown', onKeyDown, false );
+document.addEventListener( 'keyup', onKeyUp, false );
 
-// Function to determine which direction to move ship
-function keyboard(event) {
-    // Camera position values
-    let x = camera.position.x;
-    let y = camera.position.y;
-    let z = camera.position.z;
-    let speed = 12.5;
-
+function onKeyDown(event) {    
+        // Switch statement to move the ship dependent on the key press.
+        switch (event.key) {
+            case "w":
+                // Move up on 'W' press
+                moveForward = true;
+                break;
+            case "s":
+                // Move down on 'S' press
+                moveBackward = true;
+                break;
+            case "d":
+                // Move right on 'D' press
+                moveRight = true;
+                break;
+            case "a":
+                // Move left on 'A' press
+                moveLeft = true; 
+                break;
+        }
+}
+function onKeyUp(event) {    
     // Switch statement to move the ship dependent on the key press.
     switch (event.key) {
         case "w":
             // Move up on 'W' press
-            ship.position.z -= speed;
-            z -= speed;
-            setCamera(x, y, z);
-            setOrbit();
-            ship.lookAt(x, 0, 1000);
-            console.log(x, y, z);
+            moveForward = false;
             break;
         case "s":
             // Move down on 'S' press
-            ship.position.z += speed;
-            z += speed;
-            setCamera(x, y, z);
-            setOrbit();
-            ship.lookAt(x, 0, -1000);
+            moveBackward = false;
             break;
         case "d":
             // Move right on 'D' press
-            ship.position.x += speed;
-            x += speed;
-            setCamera(x, y, z);
-            setOrbit();
-            ship.lookAt(-1000, 0, z);
+            moveRight = false;
             break;
         case "a":
             // Move left on 'A' press
-            ship.position.x -= speed;
-            x -= speed;
-            setCamera(x, y, z);
-            setOrbit();
-            ship.lookAt(1000, 0, z);
+            moveLeft = false; 
             break;
     }
 }
@@ -160,6 +171,47 @@ function animate() {
     let deltat = now - currentTime;
     currentTime = now;
     let fract = deltat / duration;
+    
+    // controls
+    if(ship)
+    {
+        if(moveForward)
+        {
+            console.log("W");
+            ship.position.z -= speed;
+            z -= speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(x, 0, 1000);
+        }
+        if(moveBackward)
+        {
+            console.log("S");
+            ship.position.z += speed;
+            z += speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(x, 0, -1000);
+        }
+        if(moveLeft)
+        {
+            console.log("A");
+            ship.position.x -= speed;
+            x -= speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(1000, 0, z);
+        }
+        if(moveRight)
+        {
+            console.log("D");
+            ship.position.x += speed;
+            x += speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(-1000, 0, z);
+        }
+    }
 
     // ship.rotation.z += 0.005;
 
