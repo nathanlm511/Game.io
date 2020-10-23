@@ -19,7 +19,7 @@ let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
-let speed = 12.5;
+let speed = 6;
 let x, y ,z;
 
 let duration = 5000; // ms
@@ -39,7 +39,7 @@ function init() {
     const fov = 45;
     const aspect = container.clientWidth / container.clientHeight;
     const near = 0.1;
-    const far = 5000;
+    const far = 20000;
 
     //Camera setup
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -56,10 +56,33 @@ function init() {
     light.position.set(0, 50, 0);
     scene.add(light);
 
+    // skybox
+    let materialArray = [];
+    let texture_ft = new THREE.TextureLoader().load( './skybox/Daylight_Box_Front.bmp');
+    let texture_bk = new THREE.TextureLoader().load( './skybox/Daylight_Box_Back.bmp');
+    let texture_up = new THREE.TextureLoader().load( './skybox/Daylight_Box_Top.bmp');
+    let texture_dn = new THREE.TextureLoader().load( './skybox/Daylight_Box_Bottom.bmp');
+    let texture_rt = new THREE.TextureLoader().load( './skybox/Daylight_Box_Right.bmp');
+    let texture_lf = new THREE.TextureLoader().load( './skybox/Daylight_Box_Left.bmp');
+    
+    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_rt }));
+    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_lf }));
+    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_up }));
+    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_dn }));
+    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_ft }));
+    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_bk }));
+   
+    for (let i = 0; i < 6; i++)
+    materialArray[i].side = THREE.BackSide;
+    
+    let skyboxGeo = new THREE.BoxGeometry( 10000, 10000, 10000);
+    let skybox = new THREE.Mesh( skyboxGeo, materialArray );
+    scene.add( skybox );
+
     orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
     // Add limits to zoom in and zoom out distance
-    orbitControls.maxDistance = 3250;
-    orbitControls.minDistance = 225;
+    orbitControls.maxDistance = 1050;
+    orbitControls.minDistance = 505;
     // orbitControls.maxAzimuthAngle = [Math.PI, Math.PI]
 
     container.appendChild(renderer.domElement);
@@ -84,9 +107,9 @@ function init() {
         uniforms: uniforms,
         vertexShader: document.getElementById("vertexShader").textContent,
         fragmentShader: document.getElementById("fragmentShader").textContent,
-        transparent: false,
+        transparent: true,
     });
-    let oceanGeometry = new THREE.PlaneGeometry(3000, 3000, 100, 100);
+    let oceanGeometry = new THREE.PlaneGeometry(10000, 10000, 10, 10);
     let ocean = new THREE.Mesh(oceanGeometry, material);
 
     //
@@ -171,6 +194,10 @@ function animate() {
     let deltat = now - currentTime;
     currentTime = now;
     let fract = deltat / duration;
+    
+    x = camera.position.x;
+    y = camera.position.y;
+    z = camera.position.z;
     
     // controls
     if(ship)
