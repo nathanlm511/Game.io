@@ -44,8 +44,10 @@ function init() {
     light.position.set(0, 50, 0);
     scene.add(light);
 
-
     orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    // Add limits to zoom in and zoom out distance
+    orbitControls.maxDistance = 3250;
+    orbitControls.minDistance = 225;
 
     container.appendChild(renderer.domElement);
     // scene.background = new THREE.Color( 0xffffff );
@@ -53,29 +55,30 @@ function init() {
     let COLORMAP = new THREE.TextureLoader().load(oceanUrl);
     // let NOISEMAP = new THREE.TextureLoader().load("../images/noisy-texture-3.png");
     let NOISEMAP = new THREE.TextureLoader().load(wavesUrl);
-    
-    uniforms = 
-    {
+
+    uniforms = {
         time: { type: "f", value: 0.2 },
         noiseTexture: { type: "t", value: NOISEMAP },
-        glowTexture: { type: "t", value: COLORMAP }
+        glowTexture: { type: "t", value: COLORMAP },
     };
 
-    uniforms.noiseTexture.value.wrapS = uniforms.noiseTexture.value.wrapT = THREE.RepeatWrapping;
-    uniforms.glowTexture.value.wrapS = uniforms.glowTexture.value.wrapT = THREE.RepeatWrapping;
+    uniforms.noiseTexture.value.wrapS = uniforms.noiseTexture.value.wrapT =
+        THREE.RepeatWrapping;
+    uniforms.glowTexture.value.wrapS = uniforms.glowTexture.value.wrapT =
+        THREE.RepeatWrapping;
 
     let material = new THREE.ShaderMaterial({
         uniforms: uniforms,
-        vertexShader: document.getElementById( 'vertexShader' ).textContent,
-        fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+        vertexShader: document.getElementById("vertexShader").textContent,
+        fragmentShader: document.getElementById("fragmentShader").textContent,
         transparent: true,
-    } );
-    let oceanGeometry = new THREE.PlaneGeometry( 3000, 3000, 100, 100 );
+    });
+    let oceanGeometry = new THREE.PlaneGeometry(3000, 3000, 100, 100);
     let ocean = new THREE.Mesh(oceanGeometry, material);
 
-    // 
+    //
     ocean.rotation.x = -Math.PI / 2;
-    scene.add( ocean );
+    scene.add(ocean);
 
     //Load Model
     let loader = new THREE.GLTFLoader();
@@ -89,25 +92,90 @@ function init() {
     });
 }
 
+// Add event listener for keypresses. When keypress dectected keyboard function is called
+document.addEventListener("keydown", keyboard, false);
+
+// Function to determine which direction to move ship
+function keyboard(event) {
+    // Camera position values
+    let x = camera.position.x;
+    let y = camera.position.y;
+    let z = camera.position.z;
+    let speed = 12.5;
+
+    // Switch statement to move the ship dependent on the key press.
+    switch (event.key) {
+        case "w":
+            // Move up on 'W' press
+            ship.position.z -= speed;
+            z -= speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(x, 0, 1000);
+            console.log(x, y, z);
+            break;
+        case "s":
+            // Move down on 'S' press
+            ship.position.z += speed;
+            z += speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(x, 0, -1000);
+            break;
+        case "d":
+            // Move right on 'D' press
+            ship.position.x += speed;
+            x += speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(-1000, 0, z);
+            break;
+        case "a":
+            // Move left on 'A' press
+            ship.position.x -= speed;
+            x -= speed;
+            setCamera(x, y, z);
+            setOrbit();
+            ship.lookAt(1000, 0, z);
+            break;
+    }
+}
+
+// Function that will set a new camera position on the value passed to it.
+function setCamera(x, y, z) {
+    camera.position.set(x, y, z);
+}
+
+// Function that changes the target of the orbit controls to the position of the ship.
+function setOrbit() {
+    orbitControls.target = new THREE.Vector3(
+        ship.position.x,
+        ship.position.y,
+        ship.position.z
+    );
+}
+
 function animate() {
     let now = Date.now();
     let deltat = now - currentTime;
     currentTime = now;
     let fract = deltat / duration;
 
-        // ship.rotation.z += 0.005;
+    // ship.rotation.z += 0.005;
 
     uniforms.time.value += fract;
 }
-function run() 
-{
-    requestAnimationFrame(function() { run(); });
-    
+
+function run() {
+    requestAnimationFrame(function () {
+        run();
+    });
+
     // Render the scene
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
 
     // Spin the cube for next frame
-    animate();            
+    animate();
 }
 
 function onWindowResize() {
@@ -118,7 +186,6 @@ function onWindowResize() {
 }
 
 window.addEventListener("resize", onWindowResize);
-
 
 init();
 run();
