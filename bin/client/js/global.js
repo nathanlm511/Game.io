@@ -4,7 +4,7 @@ module.exports = {
     KEY_ENTER: 13,
     KEY_CHAT: 13,
     KEY_FIREFOOD: 119,
-    KEY_SPLIT: 32,
+    KEY_FIRECANNON: 32,
     KEY_LEFT: 37,
     KEY_UP: 38,
     KEY_RIGHT: 39,
@@ -15,6 +15,7 @@ module.exports = {
     mobile: false,
     foodSides: 10,
     virusSides: 20,
+    cannonBallSides: 10,
 
     // Canvas
     screenWidth: window.innerWidth,

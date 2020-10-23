@@ -123,6 +123,7 @@ var viruses = [];
 var fireFood = [];
 var users = [];
 var leaderboard = [];
+var cannonBalls = [];
 var target = {x: player.x, y: player.y};
 global.target = target;
 
@@ -243,7 +244,7 @@ function setupSocket(socket) {
     });
 
     // Handle movement.
-    socket.on('serverTellPlayerMove', function (userData, foodsList, massList, virusList) {
+    socket.on('serverTellPlayerMove', function (userData, foodsList, massList, virusList, cannonBallList) {
         var playerData;
         for(var i =0; i< userData.length; i++) {
             if(typeof(userData[i].id) == "undefined") {
@@ -267,6 +268,7 @@ function setupSocket(socket) {
         foods = foodsList;
         viruses = virusList;
         fireFood = massList;
+        cannonBalls = cannonBallList;
     });
 
     // Death.
@@ -484,6 +486,16 @@ function drawPlayers(order) {
     }
 }
 
+function drawCannonBalls(cannonBalls) {
+    for(var z=0; z<cannonBalls.length; z++) {
+        graph.strokeStyle = 'grey';
+        graph.fillStyle = 'grey';
+        graph.lineWidth = 10;
+        drawCircle(cannonBalls[z].x - player.x + global.screenWidth / 2,
+            cannonBalls[z].y - player.y + global.screenHeight / 2, 5, global.cannonBallSides);
+    }
+}
+
 function valueInRange(min, max, value) {
     return Math.min(max, Math.max(min, value));
 }
@@ -612,6 +624,10 @@ function gameLoop() {
 
             drawPlayers(orderMass);
             socket.emit('0', window.canvas.target); // playerSendTarget "Heartbeat".
+
+            // draw cannon balls
+            console.log(cannonBalls);
+            drawCannonBalls(cannonBalls);
 
         } else {
             graph.fillStyle = '#333333';

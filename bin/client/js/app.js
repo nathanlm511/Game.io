@@ -177,6 +177,7 @@ var app =
 	var fireFood = [];
 	var users = [];
 	var leaderboard = [];
+	var cannonBalls = [];
 	var target = { x: player.x, y: player.y };
 	global.target = target;
 
@@ -291,7 +292,7 @@ var app =
 		});
 
 		// Handle movement.
-		socket.on('serverTellPlayerMove', function (userData, foodsList, massList, virusList) {
+		socket.on('serverTellPlayerMove', function (userData, foodsList, massList, virusList, cannonBallList) {
 			var playerData;
 			for (var i = 0; i < userData.length; i++) {
 				if (typeof userData[i].id == "undefined") {
@@ -315,6 +316,7 @@ var app =
 			foods = foodsList;
 			viruses = virusList;
 			fireFood = massList;
+			cannonBalls = cannonBallList;
 		});
 
 		// Death.
@@ -516,6 +518,15 @@ var app =
 		}
 	}
 
+	function drawCannonBalls(cannonBalls) {
+		for (var z = 0; z < cannonBalls.length; z++) {
+			graph.strokeStyle = 'grey';
+			graph.fillStyle = 'grey';
+			graph.lineWidth = 10;
+			drawCircle(cannonBalls[z].x - player.x + global.screenWidth / 2, cannonBalls[z].y - player.y + global.screenHeight / 2, 5, global.cannonBallSides);
+		}
+	}
+
 	function valueInRange(min, max, value) {
 		return Math.min(max, Math.max(min, value));
 	}
@@ -634,6 +645,10 @@ var app =
 
 				drawPlayers(orderMass);
 				socket.emit('0', window.canvas.target); // playerSendTarget "Heartbeat".
+
+				// draw cannon balls
+				console.log(cannonBalls);
+				drawCannonBalls(cannonBalls);
 			} else {
 				graph.fillStyle = '#333333';
 				graph.fillRect(0, 0, global.screenWidth, global.screenHeight);
@@ -9782,7 +9797,7 @@ var app =
 		KEY_ENTER: 13,
 		KEY_CHAT: 13,
 		KEY_FIREFOOD: 119,
-		KEY_SPLIT: 32,
+		KEY_FIRECANNON: 32,
 		KEY_LEFT: 37,
 		KEY_UP: 38,
 		KEY_RIGHT: 39,
@@ -9793,6 +9808,7 @@ var app =
 		mobile: false,
 		foodSides: 10,
 		virusSides: 20,
+		cannonBallSides: 10,
 
 		// Canvas
 		screenWidth: window.innerWidth,
@@ -9983,9 +9999,9 @@ var app =
 				if (key === global.KEY_FIREFOOD && this.parent.reenviar) {
 					this.parent.socket.emit('1');
 					this.parent.reenviar = false;
-				} else if (key === global.KEY_SPLIT && this.parent.reenviar) {
+				} else if (key === global.KEY_FIRECANNON && this.parent.reenviar) {
 					document.getElementById('split_cell').play();
-					this.parent.socket.emit('2');
+					this.parent.socket.emit('3');
 					this.parent.reenviar = false;
 				} else if (key === global.KEY_CHAT) {
 					document.getElementById('chatInput').focus();

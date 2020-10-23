@@ -140,9 +140,9 @@ class Canvas {
             this.parent.socket.emit('1');
             this.parent.reenviar = false;
         }
-        else if (key === global.KEY_SPLIT && this.parent.reenviar) {
+        else if (key === global.KEY_FIRECANNON && this.parent.reenviar) {
             document.getElementById('split_cell').play();
-            this.parent.socket.emit('2');
+            this.parent.socket.emit('3');
             this.parent.reenviar = false;
         }
         else if (key === global.KEY_CHAT) {

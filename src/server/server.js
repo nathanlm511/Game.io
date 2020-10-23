@@ -26,6 +26,7 @@ var users = [];
 var massFood = [];
 var food = [];
 var virus = [];
+var cannonBalls = [];
 var sockets = {};
 
 var leaderboard = [];
@@ -173,6 +174,25 @@ function movePlayer(player) {
     player.y = y/player.cells.length;
 }
 
+function moveCannonBall(cannonBall) {
+    var deg = Math.atan2(cannonBall.target.y, cannonBall.target.x);
+    var deltaY = cannonBall.speed * Math.sin(deg);
+    var deltaX = cannonBall.speed * Math.cos(deg);
+
+    if (!isNaN(deltaY)) {
+        cannonBall.y += deltaY;
+    }
+    if (!isNaN(deltaX)) {
+        cannonBall.x += deltaX;
+    }
+}
+
+function checkCannonBall(cannonBall) {
+    var borderCalc = 5 + 5;
+
+    return !(cannonBall.x > c.gameWidth - borderCalc || cannonBall.y > c.gameHeight - borderCalc ||cannonBall.x < borderCalc || cannonBall.y < borderCalc);
+}
+
 function moveMass(mass) {
     var deg = Math.atan2(mass.target.y, mass.target.x);
     var deltaY = mass.speed * Math.sin(deg);
@@ -269,7 +289,8 @@ io.on('connection', function (socket) {
             x: 0,
             y: 0
         },
-        health: 100
+        health: 100,
+        cannonBalls: []
     };
 
     socket.on('gotit', function (player) {
@@ -476,6 +497,34 @@ io.on('connection', function (socket) {
             currentPlayer.lastSplit = new Date().getTime();
         }
     });
+    socket.on('3', function() {
+        function fireCannons(cell) {
+            cannonBalls.push({
+                x: cell.x,
+                y: cell.y,
+                target: {
+                    x: -currentPlayer.target.y,
+                    y: currentPlayer.target.x
+                },
+                speed: 5,
+                launchTime: new Date().getTime()
+            });
+            cannonBalls.push({
+                x: cell.x,
+                y: cell.y,
+                target: {
+                    x: currentPlayer.target.y,
+                    y: -currentPlayer.target.x
+                },
+                speed: 5,
+                launchTime: new Date().getTime()
+            });
+        }
+        var numMax = currentPlayer.cells.length;
+        for(var d=0; d<numMax; d++) {
+            fireCannons(currentPlayer.cells[d]);
+        }
+    });
 });
 
 function tickPlayer(currentPlayer) {
@@ -612,6 +661,10 @@ function moveloop() {
     for (i=0; i < massFood.length; i++) {
         if(massFood[i].speed > 0) moveMass(massFood[i]);
     }
+    for (i=0; i < cannonBalls.length; i++) {
+        moveCannonBall(cannonBalls[i]);
+    }
+    cannonBalls = cannonBalls.filter(cannonBall => checkCannonBall(cannonBall));
 }
 
 function gameloop() {
@@ -728,8 +781,10 @@ function sendUpdates() {
                 }
             })
             .filter(function(f) { return f; });
+        
+        var visibleCannonBalls = cannonBalls; //TODO: filter out cannonballs that are expired/off screen
 
-        sockets[u.id].emit('serverTellPlayerMove', visibleCells, visibleFood, visibleMass, visibleVirus);
+        sockets[u.id].emit('serverTellPlayerMove', visibleCells, visibleFood, visibleMass, visibleVirus, visibleCannonBalls);
         if (leaderboardChanged) {
             sockets[u.id].emit('leaderboard', {
                 players: users.length,
