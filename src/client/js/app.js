@@ -378,10 +378,6 @@ function drawHealth(curPlayer) {
     graph.strokeStyle = "green";
     graph.lineWidth = 5;
     graph.fillRect(curPlayer.x  - start.x - healthBarWidth / 2, curPlayer.y + 50 + healthBarHeight - start.y, curPlayer.health / 3, healthBarHeight);
-    console.log(curPlayer.x - start.x - healthBarWidth / 2);
-    console.log(curPlayer.y + 50 + healthBarHeight - start.y);
-
-    console.log("health drawn");
 }
 
 function drawPlayers(order) {
@@ -626,7 +622,6 @@ function gameLoop() {
             socket.emit('0', window.canvas.target); // playerSendTarget "Heartbeat".
 
             // draw cannon balls
-            console.log(cannonBalls);
             drawCannonBalls(cannonBalls);
 
         } else {

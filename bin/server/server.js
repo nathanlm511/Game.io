@@ -21,6 +21,7 @@ var quadtree = require('simple-quadtree');
 var s = c.sqlinfo;
 
 var tree = quadtree(0, 0, c.gameWidth, c.gameHeight);
+var cannonBallTree = quadtree(0, 0, c.gameWidth, c.gameHeight);
 
 var users = [];
 var massFood = [];
@@ -177,6 +178,19 @@ function moveCannonBall(cannonBall) {
     var deg = Math.atan2(cannonBall.target.y, cannonBall.target.x);
     var deltaY = cannonBall.speed * Math.sin(deg);
     var deltaX = cannonBall.speed * Math.cos(deg);
+
+    if (!isNaN(deltaY)) {
+        cannonBall.y += deltaY;
+    }
+    if (!isNaN(deltaX)) {
+        cannonBall.x += deltaX;
+    }
+}
+
+function moveCannonBallRadius(cannonBall, radius) {
+    var deg = Math.atan2(cannonBall.target.y, cannonBall.target.x);
+    var deltaY = (radius + 15) * Math.sin(deg);
+    var deltaX = (radius + 15) * Math.cos(deg);
 
     if (!isNaN(deltaY)) {
         cannonBall.y += deltaY;
@@ -487,26 +501,30 @@ io.on('connection', function (socket) {
     });
     socket.on('3', function () {
         function fireCannons(cell) {
-            cannonBalls.push({
+            var cannonBall1 = {
                 x: cell.x,
                 y: cell.y,
                 target: {
                     x: -currentPlayer.target.y,
                     y: currentPlayer.target.x
                 },
-                speed: 5,
+                speed: 1,
                 launchTime: new Date().getTime()
-            });
-            cannonBalls.push({
+            };
+            var cannonBall2 = {
                 x: cell.x,
                 y: cell.y,
                 target: {
                     x: currentPlayer.target.y,
                     y: -currentPlayer.target.x
                 },
-                speed: 5,
+                speed: 1,
                 launchTime: new Date().getTime()
-            });
+            };
+            moveCannonBallRadius(cannonBall1, cell.radius);
+            moveCannonBallRadius(cannonBall2, cell.radius);
+            cannonBalls.push(cannonBall1);
+            cannonBalls.push(cannonBall2);
         }
         var numMax = currentPlayer.cells.length;
         for (var d = 0; d < numMax; d++) {
@@ -530,7 +548,6 @@ function tickPlayer(currentPlayer) {
     function deleteFood(f) {
         food[f] = {};
         food.splice(f, 1);
-        currentPlayer.health--;
     }
 
     function eatMass(m) {
@@ -563,6 +580,10 @@ function tickPlayer(currentPlayer) {
         return true;
     }
 
+    function checkCannonBallCollisions(cannonBall) {
+        return SAT.pointInCircle(new V(cannonBall.x, cannonBall.y), playerCircle);
+    }
+
     function collisionCheck(collision) {
         if (collision.aUser.mass > collision.bUser.mass * 1.1 && collision.aUser.radius > Math.sqrt(Math.pow(collision.aUser.x - collision.bUser.x, 2) + Math.pow(collision.aUser.y - collision.bUser.y, 2)) * 1.75) {
             console.log('[DEBUG] Killing user: ' + collision.bUser.id);
@@ -583,6 +604,12 @@ function tickPlayer(currentPlayer) {
             currentPlayer.massTotal += collision.bUser.mass;
             collision.aUser.mass += collision.bUser.mass;
         }
+    }
+
+    function deleteCannonBall(ball) {
+        cannonBalls[ball] = {};
+        cannonBalls.splice(ball, 1);
+        currentPlayer.health -= 10;
     }
 
     for (var z = 0; z < currentPlayer.cells.length; z++) {
@@ -634,6 +661,14 @@ function tickPlayer(currentPlayer) {
         var otherUsers = tree.get(currentPlayer, check);
 
         playerCollisions.forEach(collisionCheck);
+
+        // check cannon collisions
+
+        var cannonBallsCollided = cannonBalls.map(checkCannonBallCollisions).reduce(function (a, b, c) {
+            return b ? a.concat(c) : a;
+        }, []);
+
+        cannonBallsCollided.forEach(deleteCannonBall);
     }
 }
 
