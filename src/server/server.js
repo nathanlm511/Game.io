@@ -336,7 +336,8 @@ io.on('connection', function (socket) {
         console.log('[INFO] User ' + currentPlayer.name + ' respawned!');
     });
 
-    socket.on('disconnect', function () {
+    socket.on('disconnect', function (reason) {
+        console.log(reason);
         if (util.findIndex(users, currentPlayer.id) > -1)
             users.splice(util.findIndex(users, currentPlayer.id), 1);
         console.log('[INFO] User ' + currentPlayer.name + ' disconnected!');
@@ -416,6 +417,7 @@ io.on('connection', function (socket) {
 
     socket.on('1', function() {
         // Fire food.
+        console.log("test");
         for(var i=0; i<currentPlayer.cells.length; i++)
         {
             if(((currentPlayer.cells[i].mass >= c.defaultPlayerMass + c.fireFood) && c.fireFood > 0) || (currentPlayer.cells[i].mass >= 20 && c.fireFood === 0)){

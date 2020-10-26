@@ -1,3 +1,5 @@
+import global from './global.js';
+
 //Variables for setup
 let container;
 let camera;
@@ -25,7 +27,167 @@ let x, y, z;
 let duration = 5000; // ms
 let currentTime = Date.now();
 
+//socket stuff
+var socket;
+var reason;
+
+var foods = [];
+var viruses = [];
+var fireFood = [];
+var users = [];
+var leaderboard = [];
+
+var player = {
+    id: -1,
+    x: global.screenWidth / 2,
+    y: global.screenHeight / 2,
+    screenWidth: global.screenWidth,
+    screenHeight: global.screenHeight,
+    target: {x: global.screenWidth / 2, y: global.screenHeight / 2}
+};
+
+    // socket stuff.
+function setupSocket(socket) {
+    // Handle ping.
+    socket.on('pongcheck', function () {
+        var latency = Date.now() - global.startPingTime;
+        debug('Latency: ' + latency + 'ms');
+        window.chat.addSystemLine('Ping: ' + latency + 'ms');
+    });
+
+    // Handle error.
+    socket.on('connect_failed', function () {
+        socket.close();
+        global.disconnected = true;
+    });
+
+    socket.on('disconnect', function () {
+        socket.close();
+        global.disconnected = true;
+    });
+
+    // Handle connection.
+    socket.on('welcome', function (playerSettings) {
+        player = playerSettings;
+        player.name = global.playerName;
+        player.screenWidth = global.screenWidth;
+        player.screenHeight = global.screenHeight;
+        global.player = player;
+        socket.emit('gotit', player);
+    });
+
+    socket.on('gameSetup', function(data) {
+        global.gameWidth = data.gameWidth;
+        global.gameHeight = data.gameHeight;
+    });
+
+    socket.on('playerDied', function (data) {
+        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> was eaten.');
+    });
+
+    socket.on('playerDisconnect', function (data) {
+        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> disconnected.');
+    });
+
+    socket.on('playerJoin', function (data) {
+        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> joined.');
+    });
+
+    socket.on('leaderboard', function (data) {
+        /*
+        leaderboard = data.leaderboard;
+        var status = '<span class="title">Leaderboard</span>';
+        for (var i = 0; i < leaderboard.length; i++) {
+            status += '<br />';
+            if (leaderboard[i].id == player.id){
+                if(leaderboard[i].name.length !== 0)
+                    status += '<span class="me">' + (i + 1) + '. ' + leaderboard[i].name + "</span>";
+                else
+                    status += '<span class="me">' + (i + 1) + ". An unnamed cell</span>";
+            } else {
+                if(leaderboard[i].name.length !== 0)
+                    status += (i + 1) + '. ' + leaderboard[i].name;
+                else
+                    status += (i + 1) + '. An unnamed cell';
+            }
+        }
+        //status += '<br />Players: ' + data.players;
+        document.getElementById('status').innerHTML = status;
+        */
+    });
+
+    socket.on('serverMSG', function (data) {
+        window.chat.addSystemLine(data);
+    });
+
+    // Chat.
+    socket.on('serverSendPlayerChat', function (data) {
+        window.chat.addChatLine(data.sender, data.message, false);
+    });
+
+    // Handle movement.
+    socket.on('serverTellPlayerMove', function (userData, foodsList, massList, virusList) {
+        var playerData;
+        for(var i =0; i< userData.length; i++) {
+            if(typeof(userData[i].id) == "undefined") {
+                playerData = userData[i];
+                i = userData.length;
+            }
+        }
+        if(global.playerType == 'player') {
+            var xoffset = player.x - playerData.x;
+            var yoffset = player.y - playerData.y;
+
+            player.x = playerData.x;
+            player.y = playerData.y;
+            player.hue = playerData.hue;
+            player.massTotal = playerData.massTotal;
+            player.cells = playerData.cells;
+            player.xoffset = isNaN(xoffset) ? 0 : xoffset;
+            player.yoffset = isNaN(yoffset) ? 0 : yoffset;
+        }
+        users = userData;
+        foods = foodsList;
+        viruses = virusList;
+        fireFood = massList;
+    });
+
+    // Death.
+    socket.on('RIP', function () {
+        global.gameStart = false;
+        global.died = true;
+        window.setTimeout(function() {
+            document.getElementById('gameAreaWrapper').style.opacity = 0;
+            document.getElementById('startMenuWrapper').style.maxHeight = '1000px';
+            global.died = false;
+            if (global.animLoopHandle) {
+                window.cancelAnimationFrame(global.animLoopHandle);
+                global.animLoopHandle = undefined;
+            }
+        }, 2500);
+    });
+
+    socket.on('kick', function (data) {
+        global.gameStart = false;
+        reason = data;
+        global.kicked = true;
+        socket.close();
+    });
+
+    socket.on('virusSplit', function (virusCell) {
+        socket.emit('2', virusCell);
+        reenviar = false;
+    });
+}
+
 function init() {
+    var type = "player";
+    if (!socket) {
+        socket = io('http://localhost:3000', {query:"type=" + type});
+        setupSocket(socket);
+    }
+    socket.emit('respawn');
+
     container = document.querySelector(".scene");
 
     //Renderer
@@ -153,6 +315,7 @@ function onKeyDown(event) {
     // Switch statement to move the ship dependent on the key press.
     switch (event.key) {
         case "w":
+            socket.emit("1");
             // Move up on 'W' press
             moveForward = true;
             break;
@@ -207,6 +370,8 @@ function setOrbit() {
 }
 
 function animate() {
+    socket.emit("0", {x: 5, y: 10});
+    console.log("test");
     let now = Date.now();
     let deltat = now - currentTime;
     currentTime = now;
