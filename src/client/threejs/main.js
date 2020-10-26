@@ -83,7 +83,7 @@ function init() {
     // Add limits to zoom in and zoom out distance
     orbitControls.maxDistance = 1050;
     orbitControls.minDistance = 505;
-    // orbitControls.maxAzimuthAngle = [Math.PI, Math.PI]
+    orbitControls.maxPolarAngle = Math.PI/2 - Math.PI/16;
 
     container.appendChild(renderer.domElement);
     // scene.background = new THREE.Color( 0xffffff );
