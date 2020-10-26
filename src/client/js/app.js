@@ -345,7 +345,7 @@ function drawFireFood(mass) {
                mass.radius-5, 18 + (~~(mass.masa/5)));
 }
 
-function drawHealth(curPlayer) {
+function drawHealth(curPlayer, start) {
     /*
     console.log(curPlayer);
     var healthBarWidth = 33;
@@ -368,10 +368,6 @@ function drawHealth(curPlayer) {
     graph.closePath();
     graph.fill();
     */
-    var start = {
-        x: curPlayer.x - (global.screenWidth / 2),
-        y: curPlayer.y - (global.screenHeight / 2)
-    };
     var healthBarWidth = 33;
     var healthBarHeight = 5;
     graph.fillStyle = "green";
@@ -391,7 +387,7 @@ function drawPlayers(order) {
         var userCurrent = users[order[z].nCell];
         var cellCurrent = users[order[z].nCell].cells[order[z].nDiv];
 
-        drawHealth(userCurrent);
+        drawHealth(userCurrent, start);
 
         var x=0;
         var y=0;
