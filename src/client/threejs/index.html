@@ -25,9 +25,9 @@
               sampler - specifies the sampler to which the texture from which texels will be retrieved is bound.
               coord - specifies the texture coordinates at which texture will be sampled.
               */
-              vec4 noise = texture2D( noiseTexture, texCoord );
-
-              vec2 translation = texCoord + vec2( -1, 1 ) * time * 0.1;
+              vec4 noise = texture2D( noiseTexture, texCoord * 8.0 );
+        
+              vec2 translation = texCoord * 16.0 + vec2( -1, 1 ) * time * 0.1; 
 
               translation.x += noise.b;
               translation.y -= noise.g;
