@@ -20,7 +20,7 @@ let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
 let speed = 6;
-let x, y ,z;
+let x, y, z;
 
 let duration = 5000; // ms
 let currentTime = Date.now();
@@ -58,26 +58,37 @@ function init() {
 
     // skybox
     let materialArray = [];
-    let texture_ft = new THREE.TextureLoader().load( './skybox/Daylight_Box_Front.bmp');
-    let texture_bk = new THREE.TextureLoader().load( './skybox/Daylight_Box_Back.bmp');
-    let texture_up = new THREE.TextureLoader().load( './skybox/Daylight_Box_Top.bmp');
-    let texture_dn = new THREE.TextureLoader().load( './skybox/Daylight_Box_Bottom.bmp');
-    let texture_rt = new THREE.TextureLoader().load( './skybox/Daylight_Box_Right.bmp');
-    let texture_lf = new THREE.TextureLoader().load( './skybox/Daylight_Box_Left.bmp');
-    
-    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_rt }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_lf }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_up }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_dn }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_ft }));
-    materialArray.push(new THREE.MeshBasicMaterial( { map: texture_bk }));
-   
-    for (let i = 0; i < 6; i++)
-    materialArray[i].side = THREE.BackSide;
-    
-    let skyboxGeo = new THREE.BoxGeometry( 10000, 10000, 10000);
-    let skybox = new THREE.Mesh( skyboxGeo, materialArray );
-    scene.add( skybox );
+    let texture_ft = new THREE.TextureLoader().load(
+        "./skybox/Daylight_Box_Front.bmp"
+    );
+    let texture_bk = new THREE.TextureLoader().load(
+        "./skybox/Daylight_Box_Back.bmp"
+    );
+    let texture_up = new THREE.TextureLoader().load(
+        "./skybox/Daylight_Box_Top.bmp"
+    );
+    let texture_dn = new THREE.TextureLoader().load(
+        "./skybox/Daylight_Box_Bottom.bmp"
+    );
+    let texture_rt = new THREE.TextureLoader().load(
+        "./skybox/Daylight_Box_Right.bmp"
+    );
+    let texture_lf = new THREE.TextureLoader().load(
+        "./skybox/Daylight_Box_Left.bmp"
+    );
+
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_rt }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_lf }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_up }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_dn }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_ft }));
+    materialArray.push(new THREE.MeshBasicMaterial({ map: texture_bk }));
+
+    for (let i = 0; i < 6; i++) materialArray[i].side = THREE.BackSide;
+
+    let skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
+    let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+    scene.add(skybox);
 
     orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
     // Add limits to zoom in and zoom out distance
@@ -128,37 +139,38 @@ function init() {
     });
 }
 
-function changevolume(amount) {
+// Changes volume of background noise when user interacts with slider
+function changeVolume(amount) {
     var audioobject = document.getElementsByTagName("audio")[0];
     audioobject.volume = amount;
 }
 
 // Add event listener for keypresses. When keypress dectected keyboard function is called
-document.addEventListener( 'keydown', onKeyDown, false );
-document.addEventListener( 'keyup', onKeyUp, false );
+document.addEventListener("keydown", onKeyDown, false);
+document.addEventListener("keyup", onKeyUp, false);
 
-function onKeyDown(event) {    
-        // Switch statement to move the ship dependent on the key press.
-        switch (event.key) {
-            case "w":
-                // Move up on 'W' press
-                moveForward = true;
-                break;
-            case "s":
-                // Move down on 'S' press
-                moveBackward = true;
-                break;
-            case "d":
-                // Move right on 'D' press
-                moveRight = true;
-                break;
-            case "a":
-                // Move left on 'A' press
-                moveLeft = true; 
-                break;
-        }
+function onKeyDown(event) {
+    // Switch statement to move the ship dependent on the key press.
+    switch (event.key) {
+        case "w":
+            // Move up on 'W' press
+            moveForward = true;
+            break;
+        case "s":
+            // Move down on 'S' press
+            moveBackward = true;
+            break;
+        case "d":
+            // Move right on 'D' press
+            moveRight = true;
+            break;
+        case "a":
+            // Move left on 'A' press
+            moveLeft = true;
+            break;
+    }
 }
-function onKeyUp(event) {    
+function onKeyUp(event) {
     // Switch statement to move the ship dependent on the key press.
     switch (event.key) {
         case "w":
@@ -175,7 +187,7 @@ function onKeyUp(event) {
             break;
         case "a":
             // Move left on 'A' press
-            moveLeft = false; 
+            moveLeft = false;
             break;
     }
 }
@@ -199,16 +211,14 @@ function animate() {
     let deltat = now - currentTime;
     currentTime = now;
     let fract = deltat / duration;
-    
+
     x = camera.position.x;
     y = camera.position.y;
     z = camera.position.z;
-    
+
     // controls
-    if(ship)
-    {
-        if(moveForward)
-        {
+    if (ship) {
+        if (moveForward) {
             console.log("W");
             ship.position.z -= speed;
             z -= speed;
@@ -216,8 +226,7 @@ function animate() {
             setOrbit();
             ship.lookAt(x, 0, 1000);
         }
-        if(moveBackward)
-        {
+        if (moveBackward) {
             console.log("S");
             ship.position.z += speed;
             z += speed;
@@ -225,8 +234,7 @@ function animate() {
             setOrbit();
             ship.lookAt(x, 0, -1000);
         }
-        if(moveLeft)
-        {
+        if (moveLeft) {
             console.log("A");
             ship.position.x -= speed;
             x -= speed;
@@ -234,8 +242,7 @@ function animate() {
             setOrbit();
             ship.lookAt(1000, 0, z);
         }
-        if(moveRight)
-        {
+        if (moveRight) {
             console.log("D");
             ship.position.x += speed;
             x += speed;
