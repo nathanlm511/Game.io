@@ -5,7 +5,8 @@ let container;
 let camera;
 let renderer;
 let scene;
-let ship;
+let ships = {};
+let playerShip;
 let orbitControls,
     geometry,
     water,
@@ -39,14 +40,17 @@ var leaderboard = [];
 
 var player = {
     id: -1,
-    x: global.screenWidth / 2,
-    y: global.screenHeight / 2,
+    name: "Unidentified Ship",
+    x: 0,
+    y: 0,
     screenWidth: global.screenWidth,
     screenHeight: global.screenHeight,
-    target: {x: global.screenWidth / 2, y: global.screenHeight / 2}
+    direction: 0,
+    speed: 0,
+    health: 100
 };
 
-    // socket stuff.
+// socket stuff.
 function setupSocket(socket) {
     // Handle ping.
     socket.on('pongcheck', function () {
@@ -76,57 +80,21 @@ function setupSocket(socket) {
         socket.emit('gotit', player);
     });
 
-    socket.on('gameSetup', function(data) {
-        global.gameWidth = data.gameWidth;
-        global.gameHeight = data.gameHeight;
-    });
-
-    socket.on('playerDied', function (data) {
-        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> was eaten.');
-    });
-
-    socket.on('playerDisconnect', function (data) {
-        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> disconnected.');
-    });
-
-    socket.on('playerJoin', function (data) {
-        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> joined.');
-    });
-
-    socket.on('leaderboard', function (data) {
-        /*
-        leaderboard = data.leaderboard;
-        var status = '<span class="title">Leaderboard</span>';
-        for (var i = 0; i < leaderboard.length; i++) {
-            status += '<br />';
-            if (leaderboard[i].id == player.id){
-                if(leaderboard[i].name.length !== 0)
-                    status += '<span class="me">' + (i + 1) + '. ' + leaderboard[i].name + "</span>";
-                else
-                    status += '<span class="me">' + (i + 1) + ". An unnamed cell</span>";
-            } else {
-                if(leaderboard[i].name.length !== 0)
-                    status += (i + 1) + '. ' + leaderboard[i].name;
-                else
-                    status += (i + 1) + '. An unnamed cell';
-            }
-        }
-        //status += '<br />Players: ' + data.players;
-        document.getElementById('status').innerHTML = status;
-        */
-    });
-
-    socket.on('serverMSG', function (data) {
-        window.chat.addSystemLine(data);
-    });
-
-    // Chat.
-    socket.on('serverSendPlayerChat', function (data) {
-        window.chat.addChatLine(data.sender, data.message, false);
-    });
-
     // Handle movement.
-    socket.on('serverTellPlayerMove', function (userData, foodsList, massList, virusList) {
+    socket.on('serverTellPlayerMove', function (visibleShips) {
+        console.log(visibleShips);
+        console.log("SHIPS");
+        console.log(ships);
+        for (var i = 0; i < visibleShips.length; i++) {
+            let ship = visibleShips[i];
+            console.log(ship.id);
+            console.log(ships[ship.id]);
+            ships[ship.id].model.x = ship.x;
+            ships[ship.id].model.y = ship.y;
+        }
+        console.log(ship.x);
+        console.log(ship.y);
+        /*
         var playerData;
         for(var i =0; i< userData.length; i++) {
             if(typeof(userData[i].id) == "undefined") {
@@ -150,7 +118,78 @@ function setupSocket(socket) {
         foods = foodsList;
         viruses = virusList;
         fireFood = massList;
+        */
+        
     });
+    
+    socket.on('gameSetup', function(data, shipsData) {
+        global.gameWidth = data.gameWidth;
+        global.gameHeight = data.gameHeight;
+        //Load Model
+        let loader = new THREE.GLTFLoader();
+        shipsData.forEach(function(item, i) {
+            loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                scene.add(gltf.scene);
+                var ship = gltf.scene.children[0];
+                ship.scale.setScalar(10);
+                ship.position.x = 0;
+                ship.position.y = 0;
+                ship.position.z = 0;
+                if (shipsData[i].id == player.id) {
+                    playerShip = ship;
+                }
+                ships[shipsData[i].id] = {
+                    model: ship,
+                    data: shipsData[i]
+                };
+            });
+        });
+    });
+
+    /*
+    socket.on('playerDied', function (data) {
+        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> was eaten.');
+    });
+
+    socket.on('playerDisconnect', function (data) {
+        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> disconnected.');
+    });
+
+    socket.on('playerJoin', function (data) {
+        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> joined.');
+    });
+
+    socket.on('leaderboard', function (data) {
+        leaderboard = data.leaderboard;
+        var status = '<span class="title">Leaderboard</span>';
+        for (var i = 0; i < leaderboard.length; i++) {
+            status += '<br />';
+            if (leaderboard[i].id == player.id){
+                if(leaderboard[i].name.length !== 0)
+                    status += '<span class="me">' + (i + 1) + '. ' + leaderboard[i].name + "</span>";
+                else
+                    status += '<span class="me">' + (i + 1) + ". An unnamed cell</span>";
+            } else {
+                if(leaderboard[i].name.length !== 0)
+                    status += (i + 1) + '. ' + leaderboard[i].name;
+                else
+                    status += (i + 1) + '. An unnamed cell';
+            }
+        }
+        //status += '<br />Players: ' + data.players;
+        document.getElementById('status').innerHTML = status;
+    });
+
+    socket.on('serverMSG', function (data) {
+        window.chat.addSystemLine(data);
+    });
+
+    // Chat.
+    socket.on('serverSendPlayerChat', function (data) {
+        window.chat.addChatLine(data.sender, data.message, false);
+    });
+
+    
 
     // Death.
     socket.on('RIP', function () {
@@ -178,6 +217,7 @@ function setupSocket(socket) {
         socket.emit('2', virusCell);
         reenviar = false;
     });
+    */
 }
 
 function init() {
@@ -288,17 +328,6 @@ function init() {
     //
     ocean.rotation.x = -Math.PI / 2;
     scene.add(ocean);
-
-    //Load Model
-    let loader = new THREE.GLTFLoader();
-    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
-        scene.add(gltf.scene);
-        ship = gltf.scene.children[0];
-        ship.scale.setScalar(10);
-        ship.position.x = 0;
-        ship.position.y = 0;
-        ship.position.z = 0;
-    });
 }
 
 // Changes volume of background noise when user interacts with slider
@@ -363,15 +392,15 @@ function setCamera(x, y, z) {
 // Function that changes the target of the orbit controls to the position of the ship.
 function setOrbit() {
     orbitControls.target = new THREE.Vector3(
-        ship.position.x,
-        ship.position.y,
-        ship.position.z
+        playerShip.position.x,
+        playerShip.position.y,
+        playerShip.position.z
     );
 }
 
 function animate() {
-    socket.emit("0", {x: 5, y: 10});
-    console.log("test");
+    socket.emit("0", moveForward, moveBackward, moveLeft, moveRight);
+    console.log("emitting 0");
     let now = Date.now();
     let deltat = now - currentTime;
     currentTime = now;
@@ -381,39 +410,35 @@ function animate() {
     y = camera.position.y;
     z = camera.position.z;
 
-    // controls
-    if (ship) {
+    // use keyboard inputs to update player state
+    if (playerShip) {
         if (moveForward) {
             console.log("W");
-            ship.position.z -= speed;
             z -= speed;
             setCamera(x, y, z);
             setOrbit();
-            ship.lookAt(x, 0, 1000);
+            playerShip.lookAt(x, 0, 1000);
         }
         if (moveBackward) {
             console.log("S");
-            ship.position.z += speed;
             z += speed;
             setCamera(x, y, z);
             setOrbit();
-            ship.lookAt(x, 0, -1000);
+            playerShip.lookAt(x, 0, -1000);
         }
         if (moveLeft) {
             console.log("A");
-            ship.position.x -= speed;
             x -= speed;
             setCamera(x, y, z);
             setOrbit();
-            ship.lookAt(1000, 0, z);
+            playerShip.lookAt(1000, 0, z);
         }
         if (moveRight) {
             console.log("D");
-            ship.position.x += speed;
             x += speed;
             setCamera(x, y, z);
             setOrbit();
-            ship.lookAt(-1000, 0, z);
+            playerShip.lookAt(-1000, 0, z);
         }
     }
 
