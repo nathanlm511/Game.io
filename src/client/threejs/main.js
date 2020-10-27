@@ -38,6 +38,8 @@ var fireFood = [];
 var users = [];
 var leaderboard = [];
 
+let loader;
+
 var player = {
     id: -1,
     name: "Unidentified Ship",
@@ -83,23 +85,17 @@ function setupSocket(socket) {
 
     // Handle movement.
     socket.on('serverTellPlayerMove', function (visibleShips) {
-        console.log(visibleShips);
-        console.log("SHIPS");
-        console.log(ships);
         var populatedDict = false;
         for (var key in ships) {
             populatedDict = true;
             break;
         }
+
         if (populatedDict) {
             for (var i = 0; i < visibleShips.length; i++) {
                 let ship = visibleShips[i];
-                console.log(ship.id);
-                console.log(ships[ship.id]);
                 ships[ship.id].model.position.x = ship.x;
                 ships[ship.id].model.position.z = ship.z;
-                console.log(ship.x);
-                console.log(ship.z);
             }
         }
         
@@ -135,7 +131,7 @@ function setupSocket(socket) {
         global.gameWidth = data.gameWidth;
         global.gameHeight = data.gameHeight;
         //Load Model
-        let loader = new THREE.GLTFLoader();
+        loader = new THREE.GLTFLoader();
         shipsData.forEach(function(item, i) {
             loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
                 scene.add(gltf.scene);
@@ -155,6 +151,24 @@ function setupSocket(socket) {
         });
     });
 
+
+    socket.on('playerJoin', function (newShip) {
+        if (loader) {
+            loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                scene.add(gltf.scene);
+                var ship = gltf.scene.children[0];
+                ship.scale.setScalar(10);
+                ship.position.x = 0;
+                ship.position.y = 0;
+                ship.position.z = 0;
+                ships[newShip.id] = {
+                    model: ship,
+                    data: newShip
+                };
+            });
+        }
+    });
+
     /*
     socket.on('playerDied', function (data) {
         //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> was eaten.');
@@ -162,10 +176,6 @@ function setupSocket(socket) {
 
     socket.on('playerDisconnect', function (data) {
         //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> disconnected.');
-    });
-
-    socket.on('playerJoin', function (data) {
-        //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> joined.');
     });
 
     socket.on('leaderboard', function (data) {
