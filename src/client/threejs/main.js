@@ -43,6 +43,7 @@ var player = {
     name: "Unidentified Ship",
     x: 0,
     y: 0,
+    z: 0,
     screenWidth: global.screenWidth,
     screenHeight: global.screenHeight,
     direction: 0,
@@ -85,15 +86,23 @@ function setupSocket(socket) {
         console.log(visibleShips);
         console.log("SHIPS");
         console.log(ships);
-        for (var i = 0; i < visibleShips.length; i++) {
-            let ship = visibleShips[i];
-            console.log(ship.id);
-            console.log(ships[ship.id]);
-            ships[ship.id].model.x = ship.x;
-            ships[ship.id].model.y = ship.y;
+        var populatedDict = false;
+        for (var key in ships) {
+            populatedDict = true;
+            break;
         }
-        console.log(ship.x);
-        console.log(ship.y);
+        if (populatedDict) {
+            for (var i = 0; i < visibleShips.length; i++) {
+                let ship = visibleShips[i];
+                console.log(ship.id);
+                console.log(ships[ship.id]);
+                ships[ship.id].model.position.x = ship.x;
+                ships[ship.id].model.position.z = ship.z;
+                console.log(ship.x);
+                console.log(ship.z);
+            }
+        }
+        
         /*
         var playerData;
         for(var i =0; i< userData.length; i++) {

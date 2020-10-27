@@ -203,6 +203,7 @@ io.on('connection', function (socket) {
         id: socket.id,
         x: 0,
         y: 0,
+        z: 0,
         type: type,
         lastHeartbeat: new Date().getTime(),
         target: {
@@ -231,6 +232,7 @@ io.on('connection', function (socket) {
 
             player.x = 0;
             player.y = 0;
+            player.z = 0;
             player.target.x = 0;
             player.target.y = 0;
             currentPlayer = player;
@@ -342,19 +344,19 @@ io.on('connection', function (socket) {
     socket.on('0', function(moveForward, moveBackward, moveLeft, moveRight) {
         currentPlayer.lastHeartbeat = new Date().getTime();
         if (moveForward) {
-            currentPlayer.x = currentPlayer.x + 5;
+            currentPlayer.z = currentPlayer.z - 6;
         }
         if (moveBackward) {
-            currentPlayer.x = currentPlayer.x - 5;
+            currentPlayer.z = currentPlayer.z + 6;
         }
         if (moveLeft) {
-            currentPlayer.y = currentPlayer.y - 5;
+            currentPlayer.x = currentPlayer.x - 6;
         }
         if (moveRight) {
-            currentPlayer.y = currentPlayer.y + 5;
+            currentPlayer.x = currentPlayer.x + 6;
         }
         console.log(currentPlayer.x);
-        console.log(currentPlayer.y);
+        console.log(currentPlayer.z);
 
     });
 
@@ -578,8 +580,8 @@ function gameloop() {
 function sendUpdates() {
     users.forEach( function(u) {
         // center the view if x/y is undefined, this will happen for spectators
-        u.x = u.x || c.gameWidth / 2;
-        u.y = u.y || c.gameHeight / 2;
+        //u.x = u.x || c.gameWidth / 2;
+        //u.y = u.y || c.gameHeight / 2;
 
         /*
         var visibleFood  = food
