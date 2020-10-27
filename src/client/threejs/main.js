@@ -96,9 +96,13 @@ function setupSocket(socket) {
                 let ship = visibleShips[i];
                 ships[ship.id].model.position.x = ship.x;
                 ships[ship.id].model.position.z = ship.z;
+                ships[ship.id].model.lookAt(ship.x - Math.cos(ship.direction * Math.PI / 180), 0, ship.z - Math.sin(ship.direction * Math.PI / 180));
             }
         }
-        
+        if (playerShip) {
+            setCamera(playerShip.position.x, 1000, playerShip.position.z);
+            setOrbit();
+        }
         /*
         var playerData;
         for(var i =0; i< userData.length; i++) {
@@ -140,7 +144,7 @@ function setupSocket(socket) {
                 ship.position.x = 0;
                 ship.position.y = 0;
                 ship.position.z = 0;
-                if (shipsData[i].id == player.id) {
+                if (shipsData[i].id == socket.id) {
                     playerShip = ship;
                 }
                 ships[shipsData[i].id] = {
@@ -434,30 +438,22 @@ function animate() {
         if (moveForward) {
             console.log("W");
             z -= speed;
-            setCamera(x, y, z);
             setOrbit();
-            playerShip.lookAt(x, 0, 1000);
         }
         if (moveBackward) {
             console.log("S");
             z += speed;
-            setCamera(x, y, z);
             setOrbit();
-            playerShip.lookAt(x, 0, -1000);
         }
         if (moveLeft) {
             console.log("A");
             x -= speed;
-            setCamera(x, y, z);
             setOrbit();
-            playerShip.lookAt(1000, 0, z);
         }
         if (moveRight) {
             console.log("D");
             x += speed;
-            setCamera(x, y, z);
             setOrbit();
-            playerShip.lookAt(-1000, 0, z);
         }
     }
 

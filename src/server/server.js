@@ -343,18 +343,23 @@ io.on('connection', function (socket) {
     // Heartbeat function, update everytime.
     socket.on('0', function(moveForward, moveBackward, moveLeft, moveRight) {
         currentPlayer.lastHeartbeat = new Date().getTime();
+        var acceleration = 0.25;
+        var turnAcceleration = 3;
         if (moveForward) {
-            currentPlayer.z = currentPlayer.z - 6;
+            currentPlayer.speed += acceleration;
         }
         if (moveBackward) {
-            currentPlayer.z = currentPlayer.z + 6;
+            currentPlayer.speed -= acceleration;
         }
         if (moveLeft) {
-            currentPlayer.x = currentPlayer.x - 6;
+            currentPlayer.direction -= turnAcceleration;
         }
         if (moveRight) {
-            currentPlayer.x = currentPlayer.x + 6;
+            currentPlayer.direction += turnAcceleration;
         }
+        currentPlayer.z += Math.sin(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
+        currentPlayer.x += Math.cos(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
+    
         console.log(currentPlayer.x);
         console.log(currentPlayer.z);
 
