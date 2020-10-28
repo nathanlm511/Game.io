@@ -268,7 +268,7 @@ function init() {
 
     //Camera setup
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 500, 400);
+    camera.position.set(0, 500, 0);
 
     x = camera.position.x;
     y = camera.position.y;
