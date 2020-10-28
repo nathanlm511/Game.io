@@ -6,6 +6,8 @@ let camera;
 let renderer;
 let scene;
 let ships = {};
+let gold = {};
+let cannonBalls = {};
 let playerShip;
 let orbitControls,
     geometry,
@@ -84,7 +86,7 @@ function setupSocket(socket) {
     });
 
     // Handle movement.
-    socket.on('serverTellPlayerMove', function (visibleShips) {
+    socket.on('serverTellPlayerMove', function (visibleShips, visibleGold, visibleBalls) {
         var populatedDict = false;
         for (var key in ships) {
             populatedDict = true;
@@ -98,6 +100,90 @@ function setupSocket(socket) {
                 ships[ship.id].model.position.z = ship.z;
                 ships[ship.id].model.lookAt(ship.x - Math.cos(ship.direction * Math.PI / 180), 0, ship.z - Math.sin(ship.direction * Math.PI / 180));
             }
+
+            // gold rendering
+            var newGold = [];
+            var deleteGold = Object.assign({}, gold);;
+            for (var i = 0; i < visibleGold.length; i++) {
+                if (!(visibleGold[i].id in gold)) {
+                    newGold.push(visibleGold[i]);
+                }
+                else {
+                    delete deleteGold[visibleGold[i].id]; 
+                }
+            }
+            loader = new THREE.GLTFLoader();
+            // populate dict first so load can be async
+            for (var i = 0; i < newGold.length; i++) {
+                gold[newGold[i].id] = {
+                    model: null,
+                    data: newGold[i]
+                };
+            }
+            newGold.forEach(function(item, i) {
+                loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                    scene.add(gltf.scene);
+                    var ship = gltf.scene.children[0];
+                    ship.scale.setScalar(1);
+                    ship.position.x = newGold[i].x;
+                    ship.position.y = 0;
+                    ship.position.z = newGold[i].z;
+                    gold[newGold[i].id] = {
+                        model: ship,
+                        data: newGold[i],
+                        scene: gltf.scene
+                    };
+                });
+            });
+            for (var id in deleteGold) {
+                console.log(gold[id].scene);
+                scene.remove(gold[id].scene);
+                delete gold[id];
+            }
+            // cannonBall rendering
+            var newBalls = [];
+            var deleteBalls = Object.assign({}, cannonBalls);;
+            for (var i = 0; i < visibleBalls.length; i++) {
+                if (!(visibleBalls[i].id in cannonBalls)) {
+                    newBalls.push(visibleBalls[i]);
+                }
+                else {
+                    if (cannonBalls[visibleBalls[i].id].model) {
+                        cannonBalls[visibleBalls[i].id].model.position.x = visibleBalls[i].x;
+                        cannonBalls[visibleBalls[i].id].model.position.z = visibleBalls[i].z;
+                    }
+                    delete deleteBalls[visibleBalls[i].id]; 
+                }
+            }
+            loader = new THREE.GLTFLoader();
+            // populate dict first so load can be async
+            for (var i = 0; i < newBalls.length; i++) {
+                cannonBalls[newBalls[i].id] = {
+                    model: null,
+                    data: newBalls[i]
+                };
+            }
+            newBalls.forEach(function(item, i) {
+                loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                    scene.add(gltf.scene);
+                    var ship = gltf.scene.children[0];
+                    ship.scale.setScalar(1);
+                    ship.position.x = newBalls[i].x;
+                    ship.position.y = 0;
+                    ship.position.z = newBalls[i].z;
+                    cannonBalls[newBalls[i].id] = {
+                        model: ship,
+                        data: newBalls[i],
+                        scene: gltf.scene
+                    };
+                });
+            });
+            for (var id in deleteBalls) {
+                console.log(cannonBalls[id].scene);
+                scene.remove(cannonBalls[id].scene);
+                delete cannonBalls[id];
+            }
+
         }
         if (playerShip) {
             setCamera(playerShip.position.x, 1000, playerShip.position.z);
@@ -149,7 +235,8 @@ function setupSocket(socket) {
                 }
                 ships[shipsData[i].id] = {
                     model: ship,
-                    data: shipsData[i]
+                    data: shipsData[i],
+                    scene: gltf.scene
                 };
             });
         });
@@ -167,7 +254,8 @@ function setupSocket(socket) {
                 ship.position.z = 0;
                 ships[newShip.id] = {
                     model: ship,
-                    data: newShip
+                    data: newShip,
+                    scene: gltf.scene
                 };
             });
         }
@@ -383,6 +471,9 @@ function onKeyDown(event) {
             // Move left on 'A' press
             moveLeft = true;
             break;
+    }
+    if (event.keyCode == 32) {
+        socket.emit("fire");
     }
 }
 function onKeyUp(event) {

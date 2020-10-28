@@ -8,6 +8,8 @@ var io = require('socket.io')(http);
 var SAT = require('sat');
 var sql = require("mysql");
 
+const { v4: uuidv4 } = require('uuid');
+
 // Import game settings.
 var c = require('../../config.json');
 
@@ -26,6 +28,8 @@ var users = [];
 var massFood = [];
 var food = [];
 var virus = [];
+var gold = [];
+var cannonBalls = [];
 var sockets = {};
 
 var leaderboard = [];
@@ -181,6 +185,16 @@ function balanceMass() {
     }
 }
 
+function createGold() {
+    let x = Math.floor(Math.random() * Math.floor(1000)) - 500;
+    let z = Math.floor(Math.random() * Math.floor(1000)) - 500;
+    gold.push({
+        x: x,
+        z: z,
+        id: uuidv4()
+    });
+}
+
 io.on('connection', function (socket) {
     console.log('A user connected!', socket.handshake.query.type);
 
@@ -241,6 +255,12 @@ io.on('connection', function (socket) {
             users.push(currentPlayer);
 
             io.emit('playerJoin', currentPlayer);
+
+            // create 20 golds
+            let goldPerPlayer = 20;
+            for (var i = 0; i < goldPerPlayer; i++) {
+                createGold();
+            }
 
             console.log(users);
             socket.emit('gameSetup', {
@@ -360,6 +380,29 @@ io.on('connection', function (socket) {
         console.log(currentPlayer.z);
     });
 
+    socket.on('fire', function () {
+        // Fire cannonball.
+        var cannonBall1 = {
+            id: uuidv4(),
+            x: currentPlayer.x,
+            z: currentPlayer.z,
+            direction: currentPlayer.direction + 90,
+            speed: 3,
+            launchTime: new Date().getTime()
+        };
+        var cannonBall2 = {
+            id: uuidv4(),
+            x: currentPlayer.x,
+            z: currentPlayer.z,
+            direction: currentPlayer.direction - 90,
+            speed: 3,
+            launchTime: new Date().getTime()
+        };
+        moveCannonBall(cannonBall1);
+        moveCannonBall(cannonBall2);
+        cannonBalls.push(cannonBall1);
+        cannonBalls.push(cannonBall2);
+    });
     socket.on('1', function () {
         // Fire food.
         console.log("test");
@@ -397,7 +440,24 @@ io.on('connection', function (socket) {
     });
 });
 
+function moveCannonBall(cannonBall) {
+    cannonBall.z += Math.sin(cannonBall.direction * Math.PI / 180) * cannonBall.speed;
+    cannonBall.x += Math.cos(cannonBall.direction * Math.PI / 180) * cannonBall.speed;
+}
+
 function tickPlayer(currentPlayer) {
+    var playerCircle = new C(new V(currentPlayer.x, currentPlayer.z), 10);
+    function funcGold(f) {
+        return SAT.pointInCircle(new V(f.x, f.z), playerCircle);
+    }
+    function deleteGold(f) {
+        gold[f] = {};
+        gold.splice(f, 1);
+    }
+    var goldEaten = gold.map(funcGold).reduce(function (a, b, c) {
+        return b ? a.concat(c) : a;
+    }, []);
+    goldEaten.forEach(deleteGold);
     /*
     if(currentPlayer.lastHeartbeat < new Date().getTime() - c.maxHeartbeatInterval) {
         sockets[currentPlayer.id].emit('kick', 'Last heartbeat received over ' + c.maxHeartbeatInterval + ' ago.');
@@ -510,6 +570,9 @@ function tickPlayer(currentPlayer) {
 }
 
 function moveloop() {
+    for (var i = 0; i < cannonBalls.length; i++) {
+        moveCannonBall(cannonBalls[i]);
+    }
     for (var i = 0; i < users.length; i++) {
         tickPlayer(users[i]);
     }
@@ -601,7 +664,11 @@ function sendUpdates() {
             */
         var visibleShips = users;
 
-        sockets[u.id].emit('serverTellPlayerMove', visibleShips);
+        var visibleGold = gold;
+
+        var visibleCannonBalls = cannonBalls;
+
+        sockets[u.id].emit('serverTellPlayerMove', visibleShips, visibleGold, visibleCannonBalls);
         /*
         if (leaderboardChanged) {
             sockets[u.id].emit('leaderboard', {
