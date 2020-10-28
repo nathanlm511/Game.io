@@ -343,13 +343,19 @@ io.on('connection', function (socket) {
     // Heartbeat function, update everytime.
     socket.on('0', function(moveForward, moveBackward, moveLeft, moveRight) {
         currentPlayer.lastHeartbeat = new Date().getTime();
-        var acceleration = 0.25;
+        var acceleration = 0.15;
+        var deceleration = 0.075;
+        const MAXSPEED = 6;
         var turnAcceleration = 3;
-        if (moveForward) {
-            currentPlayer.speed += acceleration;
-        }
-        if (moveBackward) {
-            currentPlayer.speed -= acceleration;
+
+        // Checking for MAX SPEED
+        if(currentPlayer.speed < MAXSPEED){
+            if (moveForward) {
+                currentPlayer.speed += acceleration;
+            }
+            if (moveBackward) {
+                currentPlayer.speed -= acceleration;
+            }
         }
         if (moveLeft) {
             currentPlayer.direction -= turnAcceleration;
@@ -357,12 +363,33 @@ io.on('connection', function (socket) {
         if (moveRight) {
             currentPlayer.direction += turnAcceleration;
         }
-        currentPlayer.z += Math.sin(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
-        currentPlayer.x += Math.cos(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
-    
-        console.log(currentPlayer.x);
-        console.log(currentPlayer.z);
-
+        // if not going forward nor backwards applying deceleration
+        if(!(moveBackward || moveForward)){
+            if(currentPlayer.speed > 1){
+                currentPlayer.speed -= deceleration;
+            } else if(currentPlayer.speed < -1){
+                currentPlayer.speed += deceleration;
+            }
+        }
+        //Checking for plane boundaries
+        if (currentPlayer.z > -4500 && currentPlayer.z < 4500) {
+            currentPlayer.z += Math.sin(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
+        } else if(currentPlayer.z <= -4500) {
+            currentPlayer.z += deceleration;
+        } else if(currentPlayer.z >= 4500) {
+            currentPlayer.z -= deceleration;
+        }
+        if (currentPlayer.x > -4200 && currentPlayer.x < 4200) {
+            currentPlayer.x += Math.cos(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
+        } else if(currentPlayer.x <= -4200) {
+            currentPlayer.x += deceleration;
+        } else if(currentPlayer.x >= 4200) {
+            currentPlayer.x -= deceleration;
+        }
+        // currentPlayer.z += Math.sin(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
+        // currentPlayer.x += Math.cos(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
+        
+        console.log(currentPlayer.direction);
     });
 
     socket.on('1', function() {
