@@ -226,7 +226,8 @@ io.on('connection', function (socket) {
             y: 0
         },
         direction: 0,
-        speed: 0
+        speed: 0,
+        health: 100
     };
 
     socket.on('gotit', function (player) {
@@ -426,14 +427,14 @@ io.on('connection', function (socket) {
             speed: 3,
             launchTime: new Date().getTime()
         };
-        moveCannonBall(cannonBall1);
-        moveCannonBall(cannonBall2);
+        var shipRadius = 20;
+        moveCannonBallDistance(cannonBall1, shipRadius);
+        moveCannonBallDistance(cannonBall2, shipRadius);
         cannonBalls.push(cannonBall1);
         cannonBalls.push(cannonBall2);
     });
     socket.on('1', function () {
         // Fire food.
-        console.log("test");
     });
     socket.on('2', function (virusCell) {
         function splitCell(cell) {
@@ -473,12 +474,33 @@ function moveCannonBall(cannonBall) {
     cannonBall.x += Math.cos(cannonBall.direction * Math.PI / 180) * cannonBall.speed;
 }
 
+function moveCannonBallDistance(cannonBall, distance) {
+    cannonBall.z += Math.sin(cannonBall.direction * Math.PI / 180) * distance;
+    cannonBall.x += Math.cos(cannonBall.direction * Math.PI / 180) * distance;
+}
+
+var tick = 0;
 function tickPlayer(currentPlayer) {
-    var playerCircle = new C(new V(currentPlayer.x, currentPlayer.z), 10);
+    let x1 = 25;
+    let x2 = -25;
+    let z1 = 12;
+    let z2 = -12;
+    let xm1 = Math.round(x1 * Math.cos(currentPlayer.direction * Math.PI / 180) - z1 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm1 = Math.round(x1 * Math.sin(currentPlayer.direction * Math.PI / 180) + z1 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    let xm2 = Math.round(x2 * Math.cos(currentPlayer.direction * Math.PI / 180) - z1 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm2 = Math.round(x2 * Math.sin(currentPlayer.direction * Math.PI / 180) + z1 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    let xm3 = Math.round(x1 * Math.cos(currentPlayer.direction * Math.PI / 180) - z2 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm3 = Math.round(x1 * Math.sin(currentPlayer.direction * Math.PI / 180) + z2 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    let xm4 = Math.round(x2 * Math.cos(currentPlayer.direction * Math.PI / 180) - z2 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm4 = Math.round(x2 * Math.sin(currentPlayer.direction * Math.PI / 180) + z2 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    var playerRect = new SAT.Polygon(new SAT.Vector(xm1, zm1), [new SAT.Vector(xm1, zm1), new SAT.Vector(xm2, zm2), new SAT.Vector(xm4, zm4), new SAT.Vector(xm3, zm3)]);
+    var playerCircle = new C(new V(currentPlayer.x, currentPlayer.z), 20);
+    // check gold collisions
     function funcGold(f) {
         return SAT.pointInCircle(new V(f.x, f.z), playerCircle);
     }
     function deleteGold(f) {
+        console.log("EATEN------------");
         gold[f] = {};
         gold.splice(f, 1);
     }
@@ -486,6 +508,19 @@ function tickPlayer(currentPlayer) {
         return b ? a.concat(c) : a;
     }, []);
     goldEaten.forEach(deleteGold);
+    // check cannon ball collisions
+    function funcCannon(f) {
+        return SAT.pointInPolygon(new V(f.x, f.z), playerRect);
+    }
+    function deleteCannon(f) {
+        cannonBalls[f] = {};
+        cannonBalls.splice(f, 1);
+        currentPlayer.health -= 10;
+    }
+    var ballsCollided = cannonBalls.map(funcCannon).reduce(function (a, b, c) {
+        return b ? a.concat(c) : a;
+    }, []);
+    ballsCollided.forEach(deleteCannon);
     /*
     if(currentPlayer.lastHeartbeat < new Date().getTime() - c.maxHeartbeatInterval) {
         sockets[currentPlayer.id].emit('kick', 'Last heartbeat received over ' + c.maxHeartbeatInterval + ' ago.');

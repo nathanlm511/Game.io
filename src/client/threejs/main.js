@@ -85,6 +85,7 @@ function setupSocket(socket) {
         socket.emit('gotit', player);
     });
 
+    var didPlace = false;
     // Handle movement.
     socket.on('serverTellPlayerMove', function (visibleShips, visibleGold, visibleBalls) {
         var populatedDict = false;
@@ -99,6 +100,64 @@ function setupSocket(socket) {
                 ships[ship.id].model.position.x = ship.x;
                 ships[ship.id].model.position.z = ship.z;
                 ships[ship.id].model.lookAt(ship.x - Math.cos(ship.direction * Math.PI / 180), 0, ship.z - Math.sin(ship.direction * Math.PI / 180));
+                /*
+                if (!didPlace) {
+                    let x1 = playerShip.position.x + 25;
+                    let x2 = playerShip.position.x - 25;
+                    let y1 = playerShip.position.z + 12;
+                    let y2 = playerShip.position.z - 12;
+                    let xm1 = x1*Math.cos(visibleShips[i].direction * Math.PI / 180) - y1 * Math.sin(visibleShips[i].direction * Math.PI / 180);
+                    let ym1 = x1*Math.sin(visibleShips[i].direction * Math.PI / 180) + y1 * Math.cos(visibleShips[i].direction * Math.PI / 180);
+                    let xm2 = x2*Math.cos(visibleShips[i].direction * Math.PI / 180) - y1 * Math.sin(visibleShips[i].direction * Math.PI / 180);
+                    let ym2 = x2*Math.sin(visibleShips[i].direction * Math.PI / 180) + y1 * Math.cos(visibleShips[i].direction * Math.PI / 180);
+                    let xm3 = x1*Math.cos(visibleShips[i].direction * Math.PI / 180) - y2 * Math.sin(visibleShips[i].direction * Math.PI / 180);
+                    let ym3 = x1*Math.sin(visibleShips[i].direction * Math.PI / 180) + y2 * Math.cos(visibleShips[i].direction * Math.PI / 180);
+                    let xm4 = x2*Math.cos(visibleShips[i].direction * Math.PI / 180) - y2 * Math.sin(visibleShips[i].direction * Math.PI / 180);
+                    let ym4 = x2*Math.sin(visibleShips[i].direction * Math.PI / 180) + y2 * Math.cos(visibleShips[i].direction * Math.PI / 180);
+    
+                    console.log(xm1);
+                    console.log(ym1);
+                    console.log(xm2);
+                    console.log(ym2);
+                    console.log(xm3);
+                    console.log(ym3);
+                    console.log(xm4);
+                    console.log(ym4);
+                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                        scene.add(gltf.scene);
+                        var ship = gltf.scene.children[0];
+                        ship.scale.setScalar(1);
+                        ship.position.x = xm1;
+                        ship.position.y = 0;
+                        ship.position.z = ym1;
+                    });
+                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                        scene.add(gltf.scene);
+                        var ship = gltf.scene.children[0];
+                        ship.scale.setScalar(1);
+                        ship.position.x = xm2;
+                        ship.position.y = 0;
+                        ship.position.z = ym2;
+                    });
+                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                        scene.add(gltf.scene);
+                        var ship = gltf.scene.children[0];
+                        ship.scale.setScalar(1);
+                        ship.position.x = xm3;
+                        ship.position.y = 0;
+                        ship.position.z = ym3;
+                    });
+                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                        scene.add(gltf.scene);
+                        var ship = gltf.scene.children[0];
+                        ship.scale.setScalar(1);
+                        ship.position.x = xm4;
+                        ship.position.y = 0;
+                        ship.position.z = ym4;
+                    });
+                    didPlace = true;
+                }
+                */
             }
 
             // gold rendering
