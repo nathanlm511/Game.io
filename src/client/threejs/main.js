@@ -121,15 +121,17 @@ function setupSocket(socket) {
                 };
             }
             newGold.forEach(function(item, i) {
-                loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                loader.load("./Models/glTF/cannonBall.gltf", function (gltf) {
                     scene.add(gltf.scene);
-                    var ship = gltf.scene.children[0];
-                    ship.scale.setScalar(1);
-                    ship.position.x = newGold[i].x;
-                    ship.position.y = 0;
-                    ship.position.z = newGold[i].z;
+                    var coin = gltf.scene.children[0];
+                    // Change color
+                    coin.material.color.set('#FFD700')
+                    coin.scale.setScalar(60)
+                    coin.position.x = newGold[i].x;
+                    coin.position.y = 500;
+                    coin.position.z = newGold[i].z;
                     gold[newGold[i].id] = {
-                        model: ship,
+                        model: coin,
                         data: newGold[i],
                         scene: gltf.scene
                     };
@@ -140,6 +142,7 @@ function setupSocket(socket) {
                 scene.remove(gold[id].scene);
                 delete gold[id];
             }
+
             // cannonBall rendering
             var newBalls = [];
             var deleteBalls = Object.assign({}, cannonBalls);;
@@ -164,15 +167,15 @@ function setupSocket(socket) {
                 };
             }
             newBalls.forEach(function(item, i) {
-                loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
+                loader.load("./Models/glTF/cannonBall.gltf", function (gltf) {
                     scene.add(gltf.scene);
-                    var ship = gltf.scene.children[0];
-                    ship.scale.setScalar(1);
-                    ship.position.x = newBalls[i].x;
-                    ship.position.y = 0;
-                    ship.position.z = newBalls[i].z;
+                    var cannonBall = gltf.scene.children[0];
+                    cannonBall.scale.setScalar(75);
+                    cannonBall.position.x = newBalls[i].x;
+                    cannonBall.position.y = 0;
+                    cannonBall.position.z = newBalls[i].z;
                     cannonBalls[newBalls[i].id] = {
-                        model: ship,
+                        model: cannonBall,
                         data: newBalls[i],
                         scene: gltf.scene
                     };
