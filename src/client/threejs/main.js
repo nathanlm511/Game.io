@@ -199,6 +199,7 @@ function setupSocket(socket) {
             for (var id in deleteGold) {
                 console.log(gold[id].scene);
                 scene.remove(gold[id].scene);
+                // healthBar.width -= 10; 
                 delete gold[id];
             }
 
@@ -277,6 +278,12 @@ function setupSocket(socket) {
         fireFood = massList;
         */
         
+    });
+
+    // Update health:
+    socket.on('updateHealth', function(player) {
+        var healthBar = document.getElementById("healthBar");
+        healthBar.style.width = player.health * ((global.currentPlayer.health) / 100);
     });
     
     socket.on('gameSetup', function(data, shipsData) {
