@@ -525,7 +525,7 @@ function tickPlayer(currentPlayer) {
     goldEaten.forEach(deleteGold);
     // check cannon ball collisions
     function funcCannon(f) {
-        return SAT.pointInPolygon(new V(f.x, f.z), playerRect);
+        return SAT.pointInCircle(new V(f.x, f.z), playerCircle);
     }
     function deleteCannon(f) {
         cannonBalls[f] = {};
