@@ -70,6 +70,17 @@
                 onchange="changeVolume(this.value)"
             />
         </div>
+        <div class="healthBar">
+            <script> updateHealth(); </script>
+            <div class="left1"> </div>
+            <div class="center1"> </div>
+            <div class="right1"> </div>
+            <p id="health"> Health: </p>
+            <div class="left2"> </div>
+            <div class="center2"> </div>
+            <div class="right2"> </div>
+            <p id="progress"> Progress: </p>
+        </div>
         <script src="http://127.0.0.1:3000/socket.io/socket.io.js"></script>
         <script src="./three.min.js"></script>
         <script src="./OrbitControls.js"></script>

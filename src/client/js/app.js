@@ -113,7 +113,8 @@ var player = {
     y: global.screenHeight / 2,
     screenWidth: global.screenWidth,
     screenHeight: global.screenHeight,
-    target: {x: global.screenWidth / 2, y: global.screenHeight / 2}
+    target: {x: global.screenWidth / 2, y: global.screenHeight / 2},
+    health: 100
 };
 global.player = player;
 
@@ -342,6 +343,23 @@ function drawFireFood(mass) {
                mass.radius-5, 18 + (~~(mass.masa/5)));
 }
 
+function drawHealth(curPlayer) {
+    var start = {
+        x: curPlayer.x - (global.screenWidth / 2),
+        y: curPlayer.y - (global.screenHeight / 2)
+    };
+    var healthBarWidth = 33;
+    var healthBarHeight = 5;
+    graph.fillStyle = "green";
+    graph.strokeStyle = "black";
+    graph.lineWidth = 5;
+    graph.fillRect(curPlayer.x  - start.x - healthBarWidth / 2, curPlayer.y + 50 + healthBarHeight - start.y, curPlayer.health / 3, healthBarHeight);
+    console.log(curPlayer.x - start.x - healthBarWidth / 2);
+    console.log(curPlayer.y + 50 + healthBarHeight - start.y);
+
+    console.log("health drawn");
+}
+
 function drawPlayers(order) {
     var start = {
         x: player.x - (global.screenWidth / 2),
@@ -352,6 +370,8 @@ function drawPlayers(order) {
     {
         var userCurrent = users[order[z].nCell];
         var cellCurrent = users[order[z].nCell].cells[order[z].nDiv];
+
+        drawHealth(userCurrent);
 
         var x=0;
         var y=0;
