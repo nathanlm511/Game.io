@@ -1,0 +1,166 @@
+@import "compass/css3";
+
+* {
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+body {
+    background-image: url("../assets/img/pirate_map.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+div {
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
+}
+#startMenu {
+    position: relative;
+    margin: auto;
+    width: 350px;
+    padding: 40px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    /* background-image: url("../assets/img/pirate_wood.jpg"); */
+    box-sizing: border-box;
+}
+.instructions {
+    position: relative;
+    font-weight: 900;
+    font-size: x-large;
+    color: black;
+    margin: auto;
+    width: 460px;
+    height: 345px;
+    padding: 100px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background-image: url("../assets/img/pirate_instructions.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    box-sizing: border-box;
+}
+#logo {
+    position: relative;
+    margin: auto;
+    margin-top: 100px;
+    width: 600px;
+    padding: 40px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    /* background-image: url("../assets/img/pirate_wood.jpg"); */
+    box-sizing: border-box;
+}
+.logo{
+    height: 150px; 
+    margin-top: '30px';
+    align-self: center;
+}
+#startMenu p {
+    padding: 0;
+    text-align: center;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+#playerNameInput {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    border: solid 1px #dcdcdc;
+    transition: box-shadow 0.3s, border 0.3s;
+    box-sizing: border-box;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom: 10px;
+    outline: none;
+}
+
+#playerNameInput:focus, #playerNameInput.focus {
+    border: solid 1px #CCCCCC;
+    box-shadow: 0 0 3px 1px #DDDDDD;
+}
+
+#startButton, #spectateButton {
+    position: relative;
+    margin: auto;
+    margin-top: 10px;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    font-size: large;
+    color: white;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    background: #474847;
+    border: 0;
+    border-bottom: 2px solid #282928;
+    cursor: pointer;
+    -webkit-box-shadow: inset 0 -2px #474847;
+    box-shadow: inset 0 -2px #474847;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#spectateButton:active, #spectateButton:hover,
+#startButton:active, #startButton:hover {
+    top: 1px;
+    background: #838683;
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+#startMenuWrapper {
+    -webkit-transition: max-height 1s;
+    -moz-transition: max-height 1s;
+    -ms-transition: max-height 1s;
+    -o-transition: max-height 1s;
+    transition: max-height 1s;
+    overflow: hidden;
+}
+
+
+#startMenu h3 {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+#startMenu ul {
+    margin: 10px;
+    padding: 10px;
+    margin-top: 0;
+}
+
+#startMenu .input-error {
+    color: red;
+    opacity: 0;
+    font-size : 12px;
+}
+
+#startMenuWrapper {
+    z-index: 2;
+}
+
+input [type="image"]:focus{
+ border:none;
+ outline: 1px solid transparent;
+ border-style: none;
+}
+
+*:focus {
+ outline: 1px solid transparent;
+ border-style: none;
+}
