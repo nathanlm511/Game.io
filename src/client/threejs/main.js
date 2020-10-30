@@ -656,6 +656,8 @@ document.getElementById('waves').play();
 document.getElementById('omens').play();
 omens_audio.volume = 0.4;
 waves_audio.volume = 0.4;
+// Adding the logo to the bottom right corner
+document.getElementById("logo_scene").innerHTML = "<img src='./assets/img/pirateio_logo.png' class='logo_scene' alt='Pirate.io'>";
 playerName = document.getElementById("playerNameInput").value;
 document.body.style.backgroundImage = "none";
 document.getElementById("menu").innerHTML = "";
