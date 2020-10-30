@@ -227,8 +227,7 @@ io.on('connection', function (socket) {
         },
         direction: 0,
         speed: 0,
-        health: 100,
-        gold: 0
+        health: 100
     };
 
     socket.on('gotit', function (player) {
@@ -493,6 +492,7 @@ function moveCannonBallDistance(cannonBall, distance) {
 var tick = 0;
 function tickPlayer(currentPlayer) {
     // tried to make a rectangle, doesn't work for some reason
+    /*
     let x1 = 25;
     let x2 = -25;
     let z1 = 12;
@@ -511,7 +511,7 @@ function tickPlayer(currentPlayer) {
         new SAT.Vector(xm4, zm4),
         new SAT.Vector(xm3, zm3),
       ]); 
-      
+      */
     var playerCircle = new C(
         new V(currentPlayer.x, currentPlayer.z), 20
     );
@@ -521,7 +521,7 @@ function tickPlayer(currentPlayer) {
     }
     function deleteGold(f) {
         console.log("EATEN------------");
-        currentPlayer.gold += 1;
+        currentPlayer.health += 10;
         gold[f] = {};
         gold.splice(f, 1);
     }
@@ -530,7 +530,7 @@ function tickPlayer(currentPlayer) {
     goldEaten.forEach(deleteGold);
     // check cannon ball collisions
     function funcCannon(f) {
-        return SAT.pointInCircle(new V(f.x, f.z), playerCircle);
+        return SAT.pointInPolygon(new V(f.x, f.z), playerRect);
     }
     function deleteCannon(f) {
         cannonBalls[f] = {};
@@ -540,6 +540,15 @@ function tickPlayer(currentPlayer) {
     var ballsCollided = cannonBalls.map(funcCannon)
         .reduce( function(a, b, c) { return b ? a.concat(c) : a; }, []);
     ballsCollided.forEach(deleteCannon);
+
+    if (currentPlayer.health <= 0) {
+        let index = util.findIndex(users, currentPlayer.id);
+        console.log("index---------------");
+        console.log(index);
+        users.splice(index, 1);
+        sockets[currentPlayer.id].emit('RIP');
+        io.emit('playerDied', currentPlayer.id);
+    }
     /*
     if(currentPlayer.lastHeartbeat < new Date().getTime() - c.maxHeartbeatInterval) {
         sockets[currentPlayer.id].emit('kick', 'Last heartbeat received over ' + c.maxHeartbeatInterval + ' ago.');

@@ -63,21 +63,22 @@
             </div>
             <div id="startMenuWrapper">
                 <div id="startMenu">
-                <input type="text" tabindex="0" autofocus placeholder="Enter your name here" id="playerNameInput" maxlength="25" />
-                <b class="input-error">Nick must be alphanumeric characters only!</b>
+                <input type="text" tabindex="0" autofocus placeholder="Enter your name here." id="playerNameInput" maxlength="25" />
+                <b class="input-error">Nickname must be alphanumeric characters only!</b>
                 <br />
                 <button id="startButton">Play</button>
                 <br />
                 </div>
             </div>
             <div class="instructions">
-                <h3>Gameplay</h3>
+                <h2> Gameplay </h2>
+                <br> 
                 <ul>
-                    <li>w - move up</li>
-                    <li>s - move down</li>
-                    <li>a - move left</li>
-                    <li>d - move right</li>
-                    <li>spacebar - shoot enemies</li>
+                    <li>W - Move Up</li>
+                    <li>S - Move Down</li>
+                    <li>A - Move Left</li>
+                    <li>D - Move Right</li>
+                    <li>Spacebar - Shoot Enemies</li>
 
                 </ul>
             </div>
@@ -102,13 +103,9 @@
         </div>
         <div class="healthBar">
             <script> updateHealth(); </script>
-            <div class="left1"> </div>
-            <div class="center1"> </div>
-            <div class="right1"> </div>
+            <div id="healthOval"></div>
             <p id="health"> Health: </p>
-            <div class="left2"> </div>
-            <div class="center2"> </div>
-            <div class="right2"> </div>
+            <div id="goldOval"></div>
             <p id="progress"> Progress: </p>
         </div>
         <div id="logo_scene">
