@@ -23,11 +23,30 @@ canvas {
 }
 
 .healthBar {
+    position: absolute;
     width: 200px;
     height: 50px;
-    background: green;
     z-index: 2;
-    position: absolute;
     margin-left: 50px;
     margin-top: 25px;
+    background: green;
+    animation: right-animate 1s ease infinite alternate;
+}
+
+.left,
+.center,
+.right {
+    position: relative;
+    top: 300;
+    bottom: 0;
+    background: #222;
+}
+
+@keyframes animate-width {
+    0% {
+        transform: translateX(140px)
+    }
+    100% {
+        transform: translateX(20px)
+    }
 }
