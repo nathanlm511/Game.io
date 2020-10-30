@@ -305,7 +305,7 @@ io.on('connection', function (socket) {
         }
         socket.broadcast.emit('serverSendPlayerChat', {sender: _sender, message: _message.substring(0,35)});
     });
-      socket.on('pass', function(data) {
+     socket.on('pass', function(data) {
         if (data[0] === c.adminPass) {
             console.log('[ADMIN] ' + currentPlayer.name + ' just logged in as an admin!');
             socket.emit('serverMSG', 'Welcome back ' + currentPlayer.name);
@@ -319,7 +319,7 @@ io.on('connection', function (socket) {
              pool.query('INSERT INTO logging SET name=' + currentPlayer.name + ', reason="Invalid login attempt as admin"');
         }
     });
-      socket.on('kick', function(data) {
+     socket.on('kick', function(data) {
         if (currentPlayer.admin) {
             var reason = '';
             var worked = false;
@@ -538,11 +538,11 @@ function tickPlayer(currentPlayer) {
     function funcFood(f) {
         return SAT.pointInCircle(new V(f.x, f.y), playerCircle);
     }
-      function deleteFood(f) {
+     function deleteFood(f) {
         food[f] = {};
         food.splice(f, 1);
     }
-      function eatMass(m) {
+     function eatMass(m) {
         if(SAT.pointInCircle(new V(m.x, m.y), playerCircle)){
             if(m.id == currentPlayer.id && m.speed > 0 && z == m.num)
                 return false;
@@ -551,7 +551,7 @@ function tickPlayer(currentPlayer) {
         }
         return false;
     }
-      function check(user) {
+     function check(user) {
         for(var i=0; i<user.cells.length; i++) {
             if(user.cells[i].mass > 10 && user.id !== currentPlayer.id) {
                 var response = new SAT.Response();
@@ -574,12 +574,12 @@ function tickPlayer(currentPlayer) {
         }
         return true;
     }
-      function collisionCheck(collision) {
+     function collisionCheck(collision) {
         if (collision.aUser.mass > collision.bUser.mass * 1.1  && collision.aUser.radius > Math.sqrt(Math.pow(collision.aUser.x - collision.bUser.x, 2) + Math.pow(collision.aUser.y - collision.bUser.y, 2))*1.75) {
             console.log('[DEBUG] Killing user: ' + collision.bUser.id);
             console.log('[DEBUG] Collision info:');
             console.log(collision);
-              var numUser = util.findIndex(users, collision.bUser.id);
+             var numUser = util.findIndex(users, collision.bUser.id);
             if (numUser > -1) {
                 if(users[numUser].cells.length > 1) {
                     users[numUser].massTotal -= collision.bUser.mass;
@@ -594,23 +594,23 @@ function tickPlayer(currentPlayer) {
             collision.aUser.mass += collision.bUser.mass;
         }
     }
-      var currentCell = currentPlayer;
+     var currentCell = currentPlayer;
     var playerCircle = new C(
         new V(currentCell.x, currentCell.y),
         currentCell.radius
     );
-      var foodEaten = food.map(funcFood)
+     var foodEaten = food.map(funcFood)
         .reduce( function(a, b, c) { return b ? a.concat(c) : a; }, []);
-      foodEaten.forEach(deleteFood);
-      var massEaten = massFood.map(eatMass)
+     foodEaten.forEach(deleteFood);
+     var massEaten = massFood.map(eatMass)
         .reduce(function(a, b, c) {return b ? a.concat(c) : a; }, []);
-      var virusCollision = virus.map(funcFood)
+     var virusCollision = virus.map(funcFood)
         .reduce( function(a, b, c) { return b ? a.concat(c) : a; }, []);
-      if(virusCollision > 0 && currentCell.mass > virus[virusCollision].mass) {
+     if(virusCollision > 0 && currentCell.mass > virus[virusCollision].mass) {
         sockets[currentPlayer.id].emit('virusSplit', z);
         virus.splice(virusCollision, 1);
     }
-      var masaGanada = 0;
+     var masaGanada = 0;
     for(var m=0; m<massEaten.length; m++) {
         masaGanada += massFood[massEaten[m]].masa;
         massFood[massEaten[m]] = {};
@@ -621,18 +621,18 @@ function tickPlayer(currentPlayer) {
             }
         }
     }
-      if(typeof(currentCell.speed) == "undefined")
+     if(typeof(currentCell.speed) == "undefined")
         currentCell.speed = 6.25;
     masaGanada += (foodEaten.length * c.foodMass);
     currentCell.mass += masaGanada;
     currentPlayer.massTotal += masaGanada;
     currentCell.radius = util.massToRadius(currentCell.mass);
     playerCircle.r = currentCell.radius;
-      tree.clear();
+     tree.clear();
     users.forEach(tree.put);
     var playerCollisions = [];
-      var otherUsers =  tree.get(currentPlayer, check);
-      //playerCollisions.forEach(collisionCheck);
+     var otherUsers =  tree.get(currentPlayer, check);
+     //playerCollisions.forEach(collisionCheck);
     */
 }
 
@@ -654,8 +654,8 @@ function gameloop() {
     /*
     if (users.length > 0) {
         users.sort( function(a, b) { return b.massTotal - a.massTotal; });
-          var topUsers = [];
-          for (var i = 0; i < Math.min(10, users.length); i++) {
+         var topUsers = [];
+         for (var i = 0; i < Math.min(10, users.length); i++) {
             if(users[i].type == 'player') {
                 topUsers.push({
                     id: users[i].id,
@@ -707,7 +707,7 @@ function sendUpdates() {
                 }
             })
             .filter(function(f) { return f; });
-          var visibleVirus  = virus
+         var visibleVirus  = virus
             .map(function(f) {
                 if ( f.x > u.x - u.screenWidth/2 - f.radius &&
                     f.x < u.x + u.screenWidth/2 + f.radius &&
@@ -717,7 +717,7 @@ function sendUpdates() {
                 }
             })
             .filter(function(f) { return f; });
-          var visibleMass = massFood
+         var visibleMass = massFood
             .map(function(f) {
                 if ( f.x+f.radius > u.x - u.screenWidth/2 - 20 &&
                     f.x-f.radius < u.x + u.screenWidth/2 + 20 &&
@@ -727,7 +727,7 @@ function sendUpdates() {
                 }
             })
             .filter(function(f) { return f; });
-              var visibleCells = [];
+             var visibleCells = [];
             */
         var visibleShips = users;
 

@@ -653,9 +653,17 @@ function onWindowResize() {
 window.addEventListener("resize", onWindowResize);
 document.getElementById("startButton").addEventListener("click", handleStart);
 
+// Audio
+var home_audio = document.getElementById("pirate_music");
+var omens_audio = document.getElementById("omens");
+var waves_audio = document.getElementById("waves");
+home_audio.volume = 0.4;
+
 function handleStart(){
 document.getElementById('waves').play();
 document.getElementById('omens').play();
+omens_audio.volume = 0.4;
+waves_audio.volume = 0.4;
 playerName = document.getElementById("playerNameInput").value;
 document.body.style.backgroundImage = "none";
 document.getElementById("menu").innerHTML = "";

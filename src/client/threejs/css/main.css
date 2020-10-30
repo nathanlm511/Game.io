@@ -66,6 +66,16 @@ div {
     margin-top: '30px';
     align-self: center;
 }
+.logo_scene{
+    height: 100px; 
+    align-self: center;
+}
+#logo_scene {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 2;
+}
 #startMenu p {
     padding: 0;
     text-align: center;
