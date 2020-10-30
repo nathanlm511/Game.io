@@ -5,6 +5,7 @@ let container;
 let camera;
 let renderer;
 let scene;
+let playerName;
 let ships = {};
 let gold = {};
 let cannonBalls = {};
@@ -78,7 +79,7 @@ function setupSocket(socket) {
     // Handle connection.
     socket.on('welcome', function (playerSettings) {
         player = playerSettings;
-        player.name = global.playerName;
+        player.name = playerName;
         player.screenWidth = global.screenWidth;
         player.screenHeight = global.screenHeight;
         global.player = player;
@@ -642,6 +643,15 @@ function onWindowResize() {
 }
 
 window.addEventListener("resize", onWindowResize);
+document.getElementById("startButton").addEventListener("click", handleStart);
 
+function handleStart(){
+document.getElementById('waves').play();
+document.getElementById('omens').play();
+playerName = document.getElementById("playerNameInput").value;
+document.body.style.backgroundImage = "none";
+document.getElementById("menu").innerHTML = "";
+document.getElementById('pirate_music').pause();
 init();
 run();
+}
