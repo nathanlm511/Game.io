@@ -188,7 +188,7 @@ function setupSocket(socket) {
                     coin.material.color.set('#FFD700')
                     coin.scale.setScalar(60)
                     coin.position.x = newGold[i].x;
-                    coin.position.y = 500;
+                    coin.position.y = 5;
                     coin.position.z = newGold[i].z;
                     gold[newGold[i].id] = {
                         model: coin,
@@ -250,7 +250,7 @@ function setupSocket(socket) {
 
         }
         if (playerShip) {
-            setCamera(playerShip.position.x, 1000, playerShip.position.z);
+            setCamera(playerShip.position.x, 600, playerShip.position.z + 600);
             setOrbit();
         }
         /*
@@ -426,7 +426,7 @@ function init() {
 
     //Camera setup
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 500, 0);
+    camera.position.set(0, 600, 600);
 
     x = camera.position.x;
     y = camera.position.y;
@@ -591,7 +591,6 @@ function animate() {
     let fract = deltat / duration;
 
     x = camera.position.x;
-    y = camera.position.y;
     z = camera.position.z;
 
     // use keyboard inputs to update player state
@@ -656,6 +655,8 @@ document.getElementById('waves').play();
 document.getElementById('omens').play();
 omens_audio.volume = 0.4;
 waves_audio.volume = 0.4;
+// Adding the logo to the bottom right corner
+document.getElementById("logo_scene").innerHTML = "<img src='./assets/img/pirateio_logo.png' class='logo_scene' alt='Pirate.io'>";
 playerName = document.getElementById("playerNameInput").value;
 document.body.style.backgroundImage = "none";
 document.getElementById("menu").innerHTML = "";

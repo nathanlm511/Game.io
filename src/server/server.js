@@ -185,8 +185,9 @@ function balanceMass() {
 }
 
 function createGold() {
-    let x = Math.floor(Math.random() * Math.floor(1000)) - 500;
-    let z = Math.floor(Math.random() * Math.floor(1000)) - 500;
+    let x = Math.floor(Math.random() * Math.floor(5000)) - 3000;
+    let z = Math.floor(Math.random() * Math.floor(5000)) - 3000;
+
     gold.push({
         x: x,
         z: z, 
@@ -258,7 +259,7 @@ io.on('connection', function (socket) {
             io.emit('playerJoin', currentPlayer);
 
             // create 20 golds
-            let goldPerPlayer = 20;
+            let goldPerPlayer = 800;
             for (var i = 0; i < goldPerPlayer; i++) {
                 createGold()
             }
@@ -369,6 +370,9 @@ io.on('connection', function (socket) {
         var deceleration = 0.075;
         const MAXSPEED = 6;
         var turnAcceleration = 3;
+        const XBOUNDARY = 3800;
+        const ZBOUNDARY = 4000;
+
 
         // Checking for MAX SPEED
         if(currentPlayer.speed < MAXSPEED){
@@ -394,18 +398,18 @@ io.on('connection', function (socket) {
             }
         }
         //Checking for plane boundaries
-        if (currentPlayer.z > -4500 && currentPlayer.z < 4500) {
+        if (currentPlayer.z > -ZBOUNDARY && currentPlayer.z < ZBOUNDARY) {
             currentPlayer.z += Math.sin(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
-        } else if(currentPlayer.z <= -4500) {
+        } else if(currentPlayer.z <= -ZBOUNDARY) {
             currentPlayer.z += deceleration;
-        } else if(currentPlayer.z >= 4500) {
+        } else if(currentPlayer.z >= ZBOUNDARY) {
             currentPlayer.z -= deceleration;
         }
-        if (currentPlayer.x > -4200 && currentPlayer.x < 4200) {
+        if (currentPlayer.x > -XBOUNDARY && currentPlayer.x < XBOUNDARY) {
             currentPlayer.x += Math.cos(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
-        } else if(currentPlayer.x <= -4200) {
+        } else if(currentPlayer.x <= -XBOUNDARY) {
             currentPlayer.x += deceleration;
-        } else if(currentPlayer.x >= 4200) {
+        } else if(currentPlayer.x >= XBOUNDARY) {
             currentPlayer.x -= deceleration;
         }
         // currentPlayer.z += Math.sin(currentPlayer.direction * Math.PI / 180) * currentPlayer.speed;
