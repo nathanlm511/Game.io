@@ -94,6 +94,7 @@ function setupSocket(socket) {
             populatedDict = true;
             break;
         }
+        console.log(visibleShips);
 
         if (populatedDict) {
             for (var i = 0; i < visibleShips.length; i++) {
@@ -102,69 +103,14 @@ function setupSocket(socket) {
                 ships[ship.id].model.position.z = ship.z;
                 ships[ship.id].model.lookAt(ship.x - Math.cos(ship.direction * Math.PI / 180), 0, ship.z - Math.sin(ship.direction * Math.PI / 180));
                 
-                if (ship.id == player.id) {
+                if (ship.id == socket.id) {
                     var healthBar = document.getElementById("healthOval");
-                    healthBar.style.width = ship.health * 3;
+                    healthBar.style.width = (ship.health * 3) + 'px';
+                    var goldBar = document.getElementById("goldOval");
+                    let goldWidth = Math.min(ship.gold * 5, 300);
+                    console.log(goldWidth);
+                    goldBar.style.width = goldWidth + "px";
                 }
-                
-                /*
-                if (!didPlace) {
-                    let x1 = playerShip.position.x + 25;
-                    let x2 = playerShip.position.x - 25;
-                    let y1 = playerShip.position.z + 12;
-                    let y2 = playerShip.position.z - 12;
-                    let xm1 = x1*Math.cos(visibleShips[i].direction * Math.PI / 180) - y1 * Math.sin(visibleShips[i].direction * Math.PI / 180);
-                    let ym1 = x1*Math.sin(visibleShips[i].direction * Math.PI / 180) + y1 * Math.cos(visibleShips[i].direction * Math.PI / 180);
-                    let xm2 = x2*Math.cos(visibleShips[i].direction * Math.PI / 180) - y1 * Math.sin(visibleShips[i].direction * Math.PI / 180);
-                    let ym2 = x2*Math.sin(visibleShips[i].direction * Math.PI / 180) + y1 * Math.cos(visibleShips[i].direction * Math.PI / 180);
-                    let xm3 = x1*Math.cos(visibleShips[i].direction * Math.PI / 180) - y2 * Math.sin(visibleShips[i].direction * Math.PI / 180);
-                    let ym3 = x1*Math.sin(visibleShips[i].direction * Math.PI / 180) + y2 * Math.cos(visibleShips[i].direction * Math.PI / 180);
-                    let xm4 = x2*Math.cos(visibleShips[i].direction * Math.PI / 180) - y2 * Math.sin(visibleShips[i].direction * Math.PI / 180);
-                    let ym4 = x2*Math.sin(visibleShips[i].direction * Math.PI / 180) + y2 * Math.cos(visibleShips[i].direction * Math.PI / 180);
-    
-                    console.log(xm1);
-                    console.log(ym1);
-                    console.log(xm2);
-                    console.log(ym2);
-                    console.log(xm3);
-                    console.log(ym3);
-                    console.log(xm4);
-                    console.log(ym4);
-                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
-                        scene.add(gltf.scene);
-                        var ship = gltf.scene.children[0];
-                        ship.scale.setScalar(1);
-                        ship.position.x = xm1;
-                        ship.position.y = 0;
-                        ship.position.z = ym1;
-                    });
-                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
-                        scene.add(gltf.scene);
-                        var ship = gltf.scene.children[0];
-                        ship.scale.setScalar(1);
-                        ship.position.x = xm2;
-                        ship.position.y = 0;
-                        ship.position.z = ym2;
-                    });
-                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
-                        scene.add(gltf.scene);
-                        var ship = gltf.scene.children[0];
-                        ship.scale.setScalar(1);
-                        ship.position.x = xm3;
-                        ship.position.y = 0;
-                        ship.position.z = ym3;
-                    });
-                    loader.load("./Models/glTF/ship_light.gltf", function (gltf) {
-                        scene.add(gltf.scene);
-                        var ship = gltf.scene.children[0];
-                        ship.scale.setScalar(1);
-                        ship.position.x = xm4;
-                        ship.position.y = 0;
-                        ship.position.z = ym4;
-                    });
-                    didPlace = true;
-                }
-                */
             }
 
             // gold rendering
@@ -339,6 +285,17 @@ function setupSocket(socket) {
         }
     });
 
+    // Death.
+    socket.on('RIP', function () {
+        window.location.reload();
+    });
+
+    
+    socket.on('playerDied', function (id) {
+        console.log(ships[id].scene);
+        scene.remove(ships[id].scene);
+        delete ships[id];
+    });
     /*
     socket.on('playerDied', function (data) {
         //window.chat.addSystemLine('{GAME} - <b>' + (data.name.length < 1 ? 'An unnamed cell' : data.name) + '</b> was eaten.');
@@ -664,6 +621,8 @@ document.getElementById('waves').play();
 document.getElementById('omens').play();
 omens_audio.volume = 0.4;
 waves_audio.volume = 0.4;
+// Adding the logo to the bottom right corner
+document.getElementById("logo_scene").innerHTML = "<img src='./assets/img/pirateio_logo.png' class='logo_scene' alt='Pirate.io'>";
 playerName = document.getElementById("playerNameInput").value;
 document.body.style.backgroundImage = "none";
 document.getElementById("menu").innerHTML = "";

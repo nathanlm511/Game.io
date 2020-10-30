@@ -536,6 +536,15 @@ function tickPlayer(currentPlayer) {
     var ballsCollided = cannonBalls.map(funcCannon)
         .reduce( function(a, b, c) { return b ? a.concat(c) : a; }, []);
     ballsCollided.forEach(deleteCannon);
+
+    if (currentPlayer.health <= 0) {
+        let index = util.findIndex(users, currentPlayer.id);
+        console.log("index---------------");
+        console.log(index);
+        users.splice(index, 1);
+        sockets[currentPlayer.id].emit('RIP');
+        io.emit('playerDied', currentPlayer.id);
+    }
     /*
     if(currentPlayer.lastHeartbeat < new Date().getTime() - c.maxHeartbeatInterval) {
         sockets[currentPlayer.id].emit('kick', 'Last heartbeat received over ' + c.maxHeartbeatInterval + ' ago.');
