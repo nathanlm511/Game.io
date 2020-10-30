@@ -260,7 +260,7 @@ io.on('connection', function (socket) {
             io.emit('playerJoin', currentPlayer);
 
             // create 20 golds
-            let goldPerPlayer = 800;
+            let goldPerPlayer = 50;
             for (var i = 0; i < goldPerPlayer; i++) {
                 createGold();
             }
@@ -486,20 +486,26 @@ function moveCannonBallDistance(cannonBall, distance) {
 var tick = 0;
 function tickPlayer(currentPlayer) {
     // tried to make a rectangle, doesn't work for some reason
+    /*
     let x1 = 25;
     let x2 = -25;
     let z1 = 12;
     let z2 = -12;
-    let xm1 = Math.round(x1 * Math.cos(currentPlayer.direction * Math.PI / 180) - z1 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
-    let zm1 = Math.round(x1 * Math.sin(currentPlayer.direction * Math.PI / 180) + z1 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
-    let xm2 = Math.round(x2 * Math.cos(currentPlayer.direction * Math.PI / 180) - z1 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
-    let zm2 = Math.round(x2 * Math.sin(currentPlayer.direction * Math.PI / 180) + z1 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
-    let xm3 = Math.round(x1 * Math.cos(currentPlayer.direction * Math.PI / 180) - z2 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
-    let zm3 = Math.round(x1 * Math.sin(currentPlayer.direction * Math.PI / 180) + z2 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
-    let xm4 = Math.round(x2 * Math.cos(currentPlayer.direction * Math.PI / 180) - z2 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
-    let zm4 = Math.round(x2 * Math.sin(currentPlayer.direction * Math.PI / 180) + z2 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
-    var playerRect = new SAT.Polygon(new SAT.Vector(xm1, zm1), [new SAT.Vector(xm1, zm1), new SAT.Vector(xm2, zm2), new SAT.Vector(xm4, zm4), new SAT.Vector(xm3, zm3)]);
-
+    let xm1 = Math.round(x1*Math.cos(currentPlayer.direction * Math.PI / 180) - z1 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm1 = Math.round(x1*Math.sin(currentPlayer.direction * Math.PI / 180) + z1 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    let xm2 = Math.round(x2*Math.cos(currentPlayer.direction * Math.PI / 180) - z1 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm2 = Math.round(x2*Math.sin(currentPlayer.direction * Math.PI / 180) + z1 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    let xm3 = Math.round(x1*Math.cos(currentPlayer.direction * Math.PI / 180) - z2 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm3 = Math.round(x1*Math.sin(currentPlayer.direction * Math.PI / 180) + z2 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    let xm4 = Math.round(x2*Math.cos(currentPlayer.direction * Math.PI / 180) - z2 * Math.sin(currentPlayer.direction * Math.PI / 180) + currentPlayer.x);
+    let zm4 = Math.round(x2*Math.sin(currentPlayer.direction * Math.PI / 180) + z2 * Math.cos(currentPlayer.direction * Math.PI / 180) + currentPlayer.z);
+    var playerRect = new SAT.Polygon(new SAT.Vector(xm1, zm1), [
+        new SAT.Vector(xm1, zm1),
+        new SAT.Vector(xm2, zm2),
+        new SAT.Vector(xm4, zm4),
+        new SAT.Vector(xm3, zm3),
+      ]); 
+      */
     var playerCircle = new C(new V(currentPlayer.x, currentPlayer.z), 20);
     // check gold collisions
     function funcGold(f) {
@@ -507,7 +513,7 @@ function tickPlayer(currentPlayer) {
     }
     function deleteGold(f) {
         console.log("EATEN------------");
-        currentPlayer.gold += 1;
+        currentPlayer.gold++;
         gold[f] = {};
         gold.splice(f, 1);
     }
