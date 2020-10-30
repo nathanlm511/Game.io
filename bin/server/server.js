@@ -227,7 +227,8 @@ io.on('connection', function (socket) {
         },
         direction: 0,
         speed: 0,
-        health: 100
+        health: 100,
+        gold: 0
     };
 
     socket.on('gotit', function (player) {
@@ -503,7 +504,7 @@ function tickPlayer(currentPlayer) {
     }
     function deleteGold(f) {
         console.log("EATEN------------");
-        currentPlayer.health += 10;
+        currentPlayer.gold += 1;
         gold[f] = {};
         gold.splice(f, 1);
     }

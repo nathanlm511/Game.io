@@ -101,6 +101,16 @@ function setupSocket(socket) {
                 ships[ship.id].model.position.x = ship.x;
                 ships[ship.id].model.position.z = ship.z;
                 ships[ship.id].model.lookAt(ship.x - Math.cos(ship.direction * Math.PI / 180), 0, ship.z - Math.sin(ship.direction * Math.PI / 180));
+                
+                if (ship.id == socket.id) {
+                    var healthBar = document.getElementById("healthOval");
+                    healthBar.style.width = (ship.health * 3) + 'px';
+                    var goldBar = document.getElementById("goldOval");
+                    let goldWidth = Math.min(ship.gold * 5, 300);
+                    console.log(goldWidth);
+                    goldBar.style.width = goldWidth + "px";
+                }
+                
                 /*
                 if (!didPlace) {
                     let x1 = playerShip.position.x + 25;
@@ -281,11 +291,13 @@ function setupSocket(socket) {
         
     });
 
+    /*
     // Update health:
     socket.on('updateHealth', function(player) {
         var healthBar = document.getElementById("healthBar");
         healthBar.style.width = player.health * ((global.currentPlayer.health) / 100);
     });
+    */
     
     socket.on('gameSetup', function(data, shipsData) {
         global.gameWidth = data.gameWidth;

@@ -46,13 +46,14 @@ canvas {
     color: white;
 }
 
-.left1, .center1, .right1 {
+#healthOval {
     position: absolute;
-    width: 180px;
+    width: 300px;
     height: 25px;
     z-index: 3;
     top: 30px;
     background: green;
+    border-radius: 20px;
 }
 
 .healthBar {
@@ -78,6 +79,7 @@ canvas {
     transform: translateX(80px);
 }
 
+/*
 .center1 {
     animation: center-animate 1s ease infinite alternate;
 }
@@ -85,6 +87,8 @@ canvas {
 .right1 {
     animation: right-animate 1s ease infinite alternate;
 }
+*/
+/*
 
 @keyframes right-animate {
     0% { transform: translateX(140px) }
@@ -95,6 +99,7 @@ canvas {
     0% { transform: scaleX(121) }
     100% { transform: scaleX(1) }
 }
+*/
 
 .left2, .center2, .right2 {
     position: absolute;
@@ -124,6 +129,7 @@ canvas {
     transform: translateX(80px);
 }
 
+/*
 .center2 {
     animation: center-animate 1.25s ease infinite alternate;
 }
@@ -131,7 +137,9 @@ canvas {
 .right2 {
     animation: right-animate 1.25s ease infinite alternate;
 }
+*/
 
+/*
 @keyframes right-animate {
     0% { transform: translateX(140px) }
     100% { transform: translateX(20px) }
@@ -141,3 +149,4 @@ canvas {
     0% { transform: scaleX(121) }
     100% { transform: scaleX(1) }
 }
+*/
