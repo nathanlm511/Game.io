@@ -226,7 +226,8 @@ io.on('connection', function (socket) {
         },
         direction: 0,
         speed: 0,
-        health: 100
+        health: 100,
+        gold: 0
     };
 
     socket.on('gotit', function (player) {
@@ -516,7 +517,7 @@ function tickPlayer(currentPlayer) {
     }
     function deleteGold(f) {
         console.log("EATEN------------");
-        currentPlayer.health += 10;
+        currentPlayer.gold += 1;
         gold[f] = {};
         gold.splice(f, 1);
     }
@@ -525,7 +526,7 @@ function tickPlayer(currentPlayer) {
     goldEaten.forEach(deleteGold);
     // check cannon ball collisions
     function funcCannon(f) {
-        return SAT.pointInPolygon(new V(f.x, f.z), playerRect);
+        return SAT.pointInCircle(new V(f.x, f.z), playerCircle);
     }
     function deleteCannon(f) {
         cannonBalls[f] = {};
