@@ -5,6 +5,7 @@ let container;
 let camera;
 let renderer;
 let scene;
+let playerName;
 let ships = {};
 let gold = {};
 let cannonBalls = {};
@@ -78,7 +79,7 @@ function setupSocket(socket) {
     // Handle connection.
     socket.on('welcome', function (playerSettings) {
         player = playerSettings;
-        player.name = global.playerName;
+        player.name = playerName;
         player.screenWidth = global.screenWidth;
         player.screenHeight = global.screenHeight;
         global.player = player;
@@ -199,6 +200,7 @@ function setupSocket(socket) {
             for (var id in deleteGold) {
                 console.log(gold[id].scene);
                 scene.remove(gold[id].scene);
+                // healthBar.width -= 10; 
                 delete gold[id];
             }
 
@@ -277,6 +279,12 @@ function setupSocket(socket) {
         fireFood = massList;
         */
         
+    });
+
+    // Update health:
+    socket.on('updateHealth', function(player) {
+        var healthBar = document.getElementById("healthBar");
+        healthBar.style.width = player.health * ((global.currentPlayer.health) / 100);
     });
     
     socket.on('gameSetup', function(data, shipsData) {
@@ -635,6 +643,15 @@ function onWindowResize() {
 }
 
 window.addEventListener("resize", onWindowResize);
+document.getElementById("startButton").addEventListener("click", handleStart);
 
+function handleStart(){
+document.getElementById('waves').play();
+document.getElementById('omens').play();
+playerName = document.getElementById("playerNameInput").value;
+document.body.style.backgroundImage = "none";
+document.getElementById("menu").innerHTML = "";
+document.getElementById('pirate_music').pause();
 init();
 run();
+}

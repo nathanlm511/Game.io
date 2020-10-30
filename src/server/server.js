@@ -488,7 +488,6 @@ function moveCannonBallDistance(cannonBall, distance) {
 var tick = 0;
 function tickPlayer(currentPlayer) {
     // tried to make a rectangle, doesn't work for some reason
-    /*
     let x1 = 25;
     let x2 = -25;
     let z1 = 12;
@@ -507,7 +506,7 @@ function tickPlayer(currentPlayer) {
         new SAT.Vector(xm4, zm4),
         new SAT.Vector(xm3, zm3),
       ]); 
-      */
+      
     var playerCircle = new C(
         new V(currentPlayer.x, currentPlayer.z), 20
     );
@@ -517,6 +516,7 @@ function tickPlayer(currentPlayer) {
     }
     function deleteGold(f) {
         console.log("EATEN------------");
+        currentPlayer.health += 10;
         gold[f] = {};
         gold.splice(f, 1);
     }

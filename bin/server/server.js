@@ -509,6 +509,7 @@ function tickPlayer(currentPlayer) {
     }
     function deleteGold(f) {
         console.log("EATEN------------");
+        currentPlayer.health += 10;
         gold[f] = {};
         gold.splice(f, 1);
     }

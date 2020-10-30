@@ -1,0 +1,52 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: sans-serif;
+    overflow: hidden;
+    /* background: url("https://www.freevector.com/uploads/vector/preview/13611/FreeVector-Vector-Sky-Background.jpg"); */
+}
+
+.scene,
+canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.audio {
+    position: relative;
+}
+
+.healthBar {
+    position: absolute;
+    width: 200px;
+    height: 50px;
+    z-index: 2;
+    margin-left: 50px;
+    margin-top: 25px;
+    background: green;
+    animation: right-animate 1s ease infinite alternate;
+}
+
+.left,
+.center,
+.right {
+    position: relative;
+    top: 300;
+    bottom: 0;
+    background: #222;
+}
+
+@keyframes animate-width {
+    0% {
+        transform: translateX(140px)
+    }
+    100% {
+        transform: translateX(20px)
+    }
+}
