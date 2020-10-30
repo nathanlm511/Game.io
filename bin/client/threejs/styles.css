@@ -10,6 +10,10 @@ body {
     /* background: url("https://www.freevector.com/uploads/vector/preview/13611/FreeVector-Vector-Sky-Background.jpg"); */
 }
 
+h2 {
+    text-align: center;
+}
+
 .scene,
 canvas {
     position: absolute;
