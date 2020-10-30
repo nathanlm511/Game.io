@@ -1,3 +1,7 @@
+## Pirate.io
+Introducing Pirate.io -- our twist to the classic game Agar.io. We've revamped this traditional game using a fun pirate theme -- as a player, you can sail the seas, collect gold, and shoot cannon balls at other ships!
+
+
 Agar.io Clone
 =============
 
