@@ -1,6 +1,10 @@
 <h1 align=center> Pirate.io </h1>
 <p> Introducing Pirate.io -- our twist to the classic game Agar.io. We've revamped this traditional game using a fun pirate theme -- as a player, you can sail the seas, collect gold, and shoot cannon balls at other ships! </p>
 <br>
+<p align="center">
+  <img src="Pirate.io.PNG" width="650" height="300"/>
+</p>
+<br>
 
 Agar.io Clone
 =============
